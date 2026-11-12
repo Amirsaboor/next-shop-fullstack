@@ -15,11 +15,18 @@ async function main() {
     await mongoose.connect(MONGODB_URI);
     console.log("MongoDB connected successfully!");
 
-    // تمام دسته‌بندی‌های ذخیره‌شده را می‌خوانیم
-    const categories = await Category.find();
+    // یک دسته‌بندی را با استفاده از slug پیدا می‌کنیم
+    const category = await Category.findOne({
+      slug: "laptop-computer",
+    });
 
-    console.log("Categories found:");
-    console.log(categories);
+    if (!category) {
+      console.log("Category not found");
+      return;
+    }
+
+    console.log("Category found:");
+    console.log(category);
   } finally {
     // چه عملیات موفق باشد و چه خطا بدهد، اتصال را می‌بندیم
     await mongoose.disconnect();
@@ -27,6 +34,6 @@ async function main() {
 }
 
 main().catch((error: unknown) => {
-  console.error("Category read test failed:", error);
+  console.error("Category findOne test failed:", error);
   process.exitCode = 1;
 });
