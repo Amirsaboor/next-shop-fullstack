@@ -17,7 +17,7 @@ async function main() {
 
     // یک دسته‌بندی را با استفاده از slug پیدا می‌کنیم
     const category = await Category.findOne({
-      slug: "laptop-computer",
+      slug: "laptop-computers",
     });
 
     if (!category) {
