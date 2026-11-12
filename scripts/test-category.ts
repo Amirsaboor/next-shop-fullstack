@@ -15,17 +15,11 @@ async function main() {
     await mongoose.connect(MONGODB_URI);
     console.log("MongoDB connected successfully!");
 
-    // اولین دسته‌بندی را در دیتابیس ذخیره می‌کنیم
-    const category = await Category.create({
-      name: "لپ‌تاپ و کامپیوتر",
-      slug: "laptop-computer",
-      description: "دسته‌بندی اصلی لپ‌تاپ و کامپیوتر",
-      parent: null,
-      sortOrder: 1,
-    });
+    // تمام دسته‌بندی‌های ذخیره‌شده را می‌خوانیم
+    const categories = await Category.find();
 
-    console.log("Category created successfully:");
-    console.log(category);
+    console.log("Categories found:");
+    console.log(categories);
   } finally {
     // چه عملیات موفق باشد و چه خطا بدهد، اتصال را می‌بندیم
     await mongoose.disconnect();
@@ -33,6 +27,6 @@ async function main() {
 }
 
 main().catch((error: unknown) => {
-  console.error("Category test failed:", error);
+  console.error("Category read test failed:", error);
   process.exitCode = 1;
 });
