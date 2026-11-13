@@ -15,18 +15,34 @@ async function main() {
     await mongoose.connect(MONGODB_URI);
     console.log("MongoDB connected successfully!");
 
-    // یک دسته‌بندی را با استفاده از slug پیدا می‌کنیم
-    const category = await Category.findOne({
-      slug: "laptop-computers",
+    // ساخت یک دسته‌بندی موقت برای آزمایش حذف
+    const testCategory = await Category.create({
+      name: "دسته‌بندی آزمایشی حذف",
+      slug: `delete-test-${Date.now()}`,
     });
 
-    if (!category) {
-      console.log("Category not found");
+    console.log("Test category created:");
+    console.log(testCategory);
+    console.log("Test category ID:", testCategory._id);
+
+    // حذف دسته‌بندی آزمایشی بر اساس شناسه
+    const deletedCategory = await Category.findByIdAndDelete(
+      testCategory._id,
+    );
+
+    if (!deletedCategory) {
+      console.log("Category not found for deletion");
       return;
     }
 
-    console.log("Category found:");
-    console.log(category);
+    console.log("Deleted category:");
+    console.log(deletedCategory);
+
+    // بررسی می‌کنیم که سند واقعاً از دیتابیس حذف شده باشد
+    const categoryAfterDelete = await Category.findById(testCategory._id);
+
+    console.log("Category after deletion:");
+    console.log(categoryAfterDelete);
   } finally {
     // چه عملیات موفق باشد و چه خطا بدهد، اتصال را می‌بندیم
     await mongoose.disconnect();
@@ -34,6 +50,6 @@ async function main() {
 }
 
 main().catch((error: unknown) => {
-  console.error("Category findOne test failed:", error);
+  console.error("Category findByIdAndDelete test failed:", error);
   process.exitCode = 1;
 });
