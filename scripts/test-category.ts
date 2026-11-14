@@ -43,6 +43,19 @@ async function main() {
 
     console.log("Category after deletion:");
     console.log(categoryAfterDelete);
+
+
+    // دریافت دسته‌بندی‌ها با صفحه‌بندی
+    const page = 1;
+    const limit = 3;
+
+    const categories = await Category.find()
+      .sort({ createdAt: -1, _id: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    console.log("Pagination result:");
+    console.log(categories);
   } finally {
     // چه عملیات موفق باشد و چه خطا بدهد، اتصال را می‌بندیم
     await mongoose.disconnect();
