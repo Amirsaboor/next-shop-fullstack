@@ -1,4 +1,4 @@
-import Category from "../models/category.model";
+import Category from "../models/category.model.ts";
 
 export async function getActiveCategories() {
   return Category.find({ isActive: true })
