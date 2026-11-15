@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { getActiveCategories } from "../src/modules/categories/services/category.service.ts";
+import { getRootCategories } from "../src/modules/categories/services/category.service.ts";
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
@@ -12,9 +12,9 @@ async function main() {
     await mongoose.connect(MONGODB_URI);
     console.log("MongoDB connected successfully!");
 
-    const categories = await getActiveCategories();
+    const categories = await getRootCategories();
 
-    console.log("Active categories:");
+    console.log("Root categories:");
     console.log(categories);
   } finally {
     await mongoose.disconnect();
