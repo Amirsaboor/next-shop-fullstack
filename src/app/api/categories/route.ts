@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { connectToDatabase } from "@/lib/db/connect";
+import { handleApiError } from "@/lib/api/handle-api-error";
 import {
   createCategory,
   getActiveCategories,
@@ -17,14 +18,10 @@ export async function GET() {
       data: categories,
     });
   } catch (error) {
-    console.error("GET /api/categories error:", error);
-
-    return NextResponse.json(
-      {
-        success: false,
-        message: "خطا در دریافت دسته‌بندی‌ها",
-      },
-      { status: 500 },
+    return handleApiError(
+      error,
+      "GET /api/categories error:",
+      "خطا در دریافت دسته‌بندی‌ها",
     );
   }
 }
@@ -113,52 +110,10 @@ export async function POST(request: Request) {
       { status: 201 },
     );
   } catch (error) {
-    console.error("POST /api/categories error:", error);
-
-    if (error instanceof SyntaxError) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "فرمت JSON درخواست نامعتبر است",
-        },
-        { status: 400 },
-      );
-    }
-
-    if (
-      typeof error === "object" &&
-      error !== null &&
-      "code" in error &&
-      error.code === 11000
-    ) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "این اسلاگ قبلاً ثبت شده است",
-        },
-        { status: 409 },
-      );
-    }
-
-    if (
-      error instanceof Error &&
-      (error.name === "ValidationError" || error.name === "CastError")
-    ) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "اطلاعات ارسالی معتبر نیست",
-        },
-        { status: 400 },
-      );
-    }
-
-    return NextResponse.json(
-      {
-        success: false,
-        message: "خطا در ایجاد دسته‌بندی",
-      },
-      { status: 500 },
+    return handleApiError(
+      error,
+      "POST /api/categories error:",
+      "خطا در ایجاد دسته‌بندی",
     );
   }
 }
