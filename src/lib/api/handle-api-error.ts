@@ -1,14 +1,6 @@
 import { NextResponse } from "next/server";
 
-export class ApiError extends Error {
-  statusCode: number;
-
-  constructor(message: string, statusCode = 400) {
-    super(message);
-    this.name = "ApiError";
-    this.statusCode = statusCode;
-  }
-}
+import { AppError } from "@/lib/errors/app-error";
 
 function isDuplicateKeyError(error: unknown): boolean {
   return (
@@ -26,7 +18,7 @@ export function handleApiError(
 ) {
   console.error(context, error);
 
-  if (error instanceof ApiError) {
+  if (error instanceof AppError) {
     return NextResponse.json(
       {
         success: false,
