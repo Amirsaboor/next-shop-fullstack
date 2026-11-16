@@ -1,3 +1,7 @@
+import mongoose from "mongoose";
+
+import { AppError } from "@/lib/errors/app-error";
+
 import Category from "../models/category.model.ts";
 
 export type CreateCategoryInput = {
@@ -23,7 +27,28 @@ export async function getRootCategories() {
 }
 
 export async function createCategory(input: CreateCategoryInput) {
-  const category = await Category.create(input);
+  if (input.parent) {
+    if (!mongoose.isValidObjectId(input.parent)) {
+      throw new AppError("شناسه دسته‌بندی والد معتبر نیست", 400);
+    }
+
+    const parentCategoryExists = await Category.exists({
+      _id: input.parent,
+      isActive: true,
+    });
+
+    if (!parentCategoryExists) {
+      throw new AppError(
+        "دسته‌بندی والد پیدا نشد یا غیرفعال است",
+        404,
+      );
+    }
+  }
+
+  const category = await Category.create({
+    ...input,
+    slug: input.slug.toLowerCase(),
+  });
 
   return category.toObject();
 }
