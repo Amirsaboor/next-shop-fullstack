@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 import { AppError } from "@/lib/errors/app-error";
 
-import Category from "../models/category.model.ts";
+import Category from "../models/category.model";
 
 export type CreateCategoryInput = {
   name: string;
