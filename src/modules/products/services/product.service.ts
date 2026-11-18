@@ -81,10 +81,7 @@ async function validateCategory(categoryId: string) {
   }
 }
 
-function validateProductPrices(
-  price: number,
-  compareAtPrice?: number | null,
-) {
+function validateProductPrices(price: number, compareAtPrice?: number | null) {
   if (!Number.isFinite(price) || price < 0) {
     throw new AppError("قیمت محصول معتبر نیست", 400);
   }
@@ -99,18 +96,16 @@ function validateProductPrices(
 }
 
 function validateVariants(
-  hasVariants: boolean | undefined,
-  variants: ProductVariantInput[] | undefined,
+  hasVariants: boolean,
+  variants: ProductVariantInput[],
 ) {
-  if (hasVariants && (!variants || variants.length === 0)) {
+  if (hasVariants && variants.length === 0) {
     throw new AppError("برای محصول دارای تنوع، حداقل یک تنوع ثبت کنید", 400);
   }
 
-  if (!hasVariants && variants && variants.length > 0) {
+  if (!hasVariants && variants.length > 0) {
     throw new AppError("برای ثبت تنوع‌ها، hasVariants باید فعال باشد", 400);
   }
-
-  if (!variants) return;
 
   const skus = variants.map((variant) => variant.sku.trim().toUpperCase());
   if (new Set(skus).size !== skus.length) {
@@ -141,9 +136,7 @@ export async function getProducts(options: GetProductsOptions = {}) {
     filter.$text = { $search: options.search.trim() };
   }
 
-  if (options.featured !== undefined) {
-    filter.isFeatured = options.featured;
-  }
+  if (options.featured !== undefined) filter.isFeatured = options.featured;
 
   if (options.minPrice !== undefined || options.maxPrice !== undefined) {
     filter.price = {
@@ -160,11 +153,9 @@ export async function getProducts(options: GetProductsOptions = {}) {
     name: { name: 1 },
   } as const;
 
-  const sort = sortOptions[options.sort ?? "newest"];
-
   const [products, total] = await Promise.all([
     Product.find(filter)
-      .sort(sort)
+      .sort(sortOptions[options.sort ?? "newest"])
       .skip((page - 1) * limit)
       .limit(limit)
       .populate("category", "name slug")
@@ -192,24 +183,26 @@ export async function getProductById(id: string) {
     .populate("category", "name slug")
     .lean();
 
-  if (!product) {
-    throw new AppError("محصول پیدا نشد", 404);
-  }
-
+  if (!product) throw new AppError("محصول پیدا نشد", 404);
   return product;
 }
 
 export async function createProduct(input: CreateProductInput) {
   await validateCategory(input.category);
   validateProductPrices(input.price, input.compareAtPrice);
-  validateVariants(input.hasVariants, input.variants);
 
-  if (!input.hasVariants && (!Number.isInteger(input.stock ?? 0) || (input.stock ?? 0) < 0)) {
+  const hasVariants = input.hasVariants ?? false;
+  const variants = input.variants ?? [];
+  validateVariants(hasVariants, variants);
+
+  if (!hasVariants && (!Number.isInteger(input.stock ?? 0) || (input.stock ?? 0) < 0)) {
     throw new AppError("موجودی محصول باید عدد صحیح نامنفی باشد", 400);
   }
 
   const product = await Product.create({
     ...input,
+    hasVariants,
+    variants,
     slug: input.slug.toLowerCase(),
     brand: input.brand?.trim() ?? "",
     tags: input.tags?.map((tag) => tag.trim()).filter(Boolean) ?? [],
@@ -221,22 +214,30 @@ export async function createProduct(input: CreateProductInput) {
 export async function updateProduct(id: string, input: UpdateProductInput) {
   validateProductId(id);
 
-  const existingProduct = await Product.findById(id).select("_id").lean();
-  if (!existingProduct) {
-    throw new AppError("محصول پیدا نشد", 404);
-  }
+  const existingProduct = await Product.findById(id)
+    .select("price compareAtPrice hasVariants variants")
+    .lean();
+
+  if (!existingProduct) throw new AppError("محصول پیدا نشد", 404);
 
   if (input.category) await validateCategory(input.category);
 
-  if (input.price !== undefined) {
-    validateProductPrices(input.price, input.compareAtPrice);
-  } else if (input.compareAtPrice !== undefined && input.compareAtPrice !== null) {
-    throw new AppError("برای تغییر قیمت قبل از تخفیف، قیمت فروش را هم ارسال کنید", 400);
-  }
+  const nextPrice = input.price ?? existingProduct.price;
+  const nextCompareAtPrice =
+    input.compareAtPrice !== undefined
+      ? input.compareAtPrice
+      : existingProduct.compareAtPrice;
+  validateProductPrices(nextPrice, nextCompareAtPrice);
 
-  if (input.hasVariants !== undefined || input.variants !== undefined) {
-    const hasVariants = input.hasVariants ?? false;
-    validateVariants(hasVariants, input.variants ?? []);
+  const nextHasVariants = input.hasVariants ?? existingProduct.hasVariants;
+  const nextVariants = input.variants ?? existingProduct.variants;
+  validateVariants(nextHasVariants, nextVariants as ProductVariantInput[]);
+
+  if (
+    input.stock !== undefined &&
+    (!Number.isInteger(input.stock) || input.stock < 0)
+  ) {
+    throw new AppError("موجودی محصول باید عدد صحیح نامنفی باشد", 400);
   }
 
   const updateData = {
