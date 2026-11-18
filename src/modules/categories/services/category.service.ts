@@ -49,7 +49,7 @@ async function validateParent(parentId: string, categoryId?: string) {
     while (currentParentId) {
       const currentId = String(currentParentId);
 
-      if (currentId === categoryId) {
+      if (currentId === categoryId.toLowerCase()) {
         throw new AppError(
           "یک دسته‌بندی نمی‌تواند والد خودش یا یکی از والدهای خودش باشد",
           400,
