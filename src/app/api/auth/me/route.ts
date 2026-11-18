@@ -1,3 +1,4 @@
+import { connection } from "next/server";
 import { NextRequest, NextResponse } from "next/server";
 
 import { connectToDatabase } from "@/lib/db/connect";
@@ -7,6 +8,8 @@ import { getPublicUserById } from "@/modules/auth/services/auth.service";
 
 export async function GET(request: NextRequest) {
   try {
+    // This endpoint depends on the incoming request cookie and must not be prerendered.
+    await connection();
     const token = request.cookies.get(sessionCookie.name)?.value;
 
     if (!token) {
