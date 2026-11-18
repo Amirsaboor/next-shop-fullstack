@@ -25,7 +25,7 @@ const variantSchema = z.object({
   "قیمت قبل از تخفیف نمی‌تواند کمتر از قیمت فروش باشد",
 );
 
-export const createProductSchema = z.object({
+const productFields = {
   name: z.string().trim().min(2).max(180),
   slug: z.string().trim().min(2).max(180).regex(/^[a-zA-Z0-9-]+$/),
   description: z.string().max(10000).optional(),
@@ -42,27 +42,41 @@ export const createProductSchema = z.object({
   tags: z.array(z.string().trim().min(1).max(40)).max(30).optional(),
   isFeatured: z.boolean().optional(),
   sortOrder: z.number().int().min(0).optional(),
-}).strict().superRefine((product, context) => {
-  if (product.compareAtPrice != null && product.compareAtPrice < product.price) {
-    context.addIssue({ code: "custom", path: ["compareAtPrice"], message: "قیمت قبل از تخفیف نمی‌تواند کمتر از قیمت فروش باشد" });
-  }
-  const variants = product.variants ?? [];
-  if (product.hasVariants && variants.length === 0) {
-    context.addIssue({ code: "custom", path: ["variants"], message: "برای محصول دارای تنوع، حداقل یک تنوع ثبت کنید" });
-  }
-  if (!product.hasVariants && variants.length > 0) {
-    context.addIssue({ code: "custom", path: ["hasVariants"], message: "برای ثبت تنوع‌ها، hasVariants باید فعال باشد" });
-  }
-  const skus = variants.map((variant) => variant.sku.trim().toUpperCase());
-  if (new Set(skus).size !== skus.length) {
-    context.addIssue({ code: "custom", path: ["variants"], message: "کد SKU تنوع‌های یک محصول باید یکتا باشد" });
-  }
-});
+  isActive: z.boolean().optional(),
+};
 
-export const updateProductSchema = createProductSchema.partial()
-  .extend({ isActive: z.boolean().optional() })
+export const createProductSchema = z.object(productFields)
+  .omit({ isActive: true })
   .strict()
-  .refine((value) => Object.keys(value).length > 0, "حداقل یک فیلد برای ویرایش ارسال کنید");
+  .superRefine((product, context) => {
+    if (product.compareAtPrice != null && product.compareAtPrice < product.price) {
+      context.addIssue({ code: "custom", path: ["compareAtPrice"], message: "قیمت قبل از تخفیف نمی‌تواند کمتر از قیمت فروش باشد" });
+    }
+    const variants = product.variants ?? [];
+    if (product.hasVariants && variants.length === 0) {
+      context.addIssue({ code: "custom", path: ["variants"], message: "برای محصول دارای تنوع، حداقل یک تنوع ثبت کنید" });
+    }
+    if (!product.hasVariants && variants.length > 0) {
+      context.addIssue({ code: "custom", path: ["hasVariants"], message: "برای ثبت تنوع‌ها، hasVariants باید فعال باشد" });
+    }
+    const skus = variants.map((variant) => variant.sku.trim().toUpperCase());
+    if (new Set(skus).size !== skus.length) {
+      context.addIssue({ code: "custom", path: ["variants"], message: "کد SKU تنوع‌های یک محصول باید یکتا باشد" });
+    }
+  });
+
+export const updateProductSchema = z.object(productFields)
+  .partial()
+  .strict()
+  .refine((value) => Object.keys(value).length > 0, "حداقل یک فیلد برای ویرایش ارسال کنید")
+  .superRefine((product, context) => {
+    if (product.price !== undefined && product.compareAtPrice != null && product.compareAtPrice < product.price) {
+      context.addIssue({ code: "custom", path: ["compareAtPrice"], message: "قیمت قبل از تخفیف نمی‌تواند کمتر از قیمت فروش باشد" });
+    }
+    if (product.variants && product.variants.length > 0 && product.hasVariants === false) {
+      context.addIssue({ code: "custom", path: ["hasVariants"], message: "برای ثبت تنوع‌ها، hasVariants باید فعال باشد" });
+    }
+  });
 
 export type CreateProductSchemaInput = z.infer<typeof createProductSchema>;
 export type UpdateProductSchemaInput = z.infer<typeof updateProductSchema>;
