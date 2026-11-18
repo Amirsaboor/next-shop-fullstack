@@ -31,7 +31,10 @@ async function validateParent(parentId: string, categoryId?: string) {
     throw new AppError("شناسه دسته‌بندی والد معتبر نیست", 400);
   }
 
-  const parentCategory = await Category.findById(parentId)
+  const parentCategory = await Category.findOne({
+    _id: parentId,
+    isActive: true,
+  })
     .select("_id")
     .lean();
 
