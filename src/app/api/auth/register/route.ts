@@ -3,45 +3,24 @@ import { NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/db/connect";
 import { handleApiError } from "@/lib/api/handle-api-error";
 import { assertSessionConfig, createSessionToken, sessionCookie } from "@/lib/auth/session";
+import { registerSchema } from "@/lib/validations/auth.schema";
 import { registerUser } from "@/modules/auth/services/auth.service";
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
 
 export async function POST(request: Request) {
   try {
     const body: unknown = await request.json();
+    const validation = registerSchema.safeParse(body);
 
-    if (!isRecord(body)) {
+    if (!validation.success) {
       return NextResponse.json(
-        { success: false, message: "بدنه درخواست معتبر نیست" },
+        { success: false, message: validation.error.issues[0]?.message ?? "اطلاعات ثبت‌نام معتبر نیست", errors: validation.error.issues },
         { status: 400 },
       );
     }
 
-    const fields = ["firstName", "lastName", "username", "mobile", "email", "password"] as const;
-    for (const field of fields) {
-      if (typeof body[field] !== "string" || !body[field].trim()) {
-        return NextResponse.json(
-          { success: false, message: "تمام فیلدهای ثبت‌نام الزامی هستند" },
-          { status: 400 },
-        );
-      }
-    }
-
-    // Validate session configuration before creating the user in the database.
     assertSessionConfig();
     await connectToDatabase();
-
-    const user = await registerUser({
-      firstName: body.firstName as string,
-      lastName: body.lastName as string,
-      username: body.username as string,
-      mobile: body.mobile as string,
-      email: body.email as string,
-      password: body.password as string,
-    });
+    const user = await registerUser(validation.data);
 
     const response = NextResponse.json(
       { success: true, message: "ثبت‌نام با موفقیت انجام شد", data: user },
