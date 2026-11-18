@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { getRootCategories } from "../src/modules/categories/services/category.service.ts";
+import { getRootCategories } from "../src/modules/categories/services/category.service";
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
