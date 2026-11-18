@@ -3,36 +3,24 @@ import { NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/db/connect";
 import { handleApiError } from "@/lib/api/handle-api-error";
 import { assertSessionConfig, createSessionToken, sessionCookie } from "@/lib/auth/session";
+import { loginSchema } from "@/lib/validations/auth.schema";
 import { loginUser } from "@/modules/auth/services/auth.service";
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
 
 export async function POST(request: Request) {
   try {
     const body: unknown = await request.json();
+    const validation = loginSchema.safeParse(body);
 
-    if (
-      !isRecord(body) ||
-      typeof body.identifier !== "string" ||
-      !body.identifier.trim() ||
-      typeof body.password !== "string" ||
-      !body.password
-    ) {
+    if (!validation.success) {
       return NextResponse.json(
-        { success: false, message: "نام کاربری یا ایمیل و رمز عبور الزامی هستند" },
+        { success: false, message: validation.error.issues[0]?.message ?? "اطلاعات ورود معتبر نیست", errors: validation.error.issues },
         { status: 400 },
       );
     }
 
-    // Fail early when the session cookie cannot be signed.
     assertSessionConfig();
     await connectToDatabase();
-    const user = await loginUser({
-      identifier: body.identifier,
-      password: body.password,
-    });
+    const user = await loginUser(validation.data);
 
     const response = NextResponse.json({
       success: true,
