@@ -1,18 +1,13 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 import { connectToDatabase } from "@/lib/db/connect";
 import { handleApiError } from "@/lib/api/handle-api-error";
 import { sessionCookie, verifySessionToken } from "@/lib/auth/session";
 import { getPublicUserById } from "@/modules/auth/services/auth.service";
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
-    const token = request.headers
-      .get("cookie")
-      ?.split(";")
-      .map((item) => item.trim())
-      .find((item) => item.startsWith(`${sessionCookie.name}=`))
-      ?.slice(sessionCookie.name.length + 1);
+    const token = request.cookies.get(sessionCookie.name)?.value;
 
     if (!token) {
       return NextResponse.json(
@@ -21,7 +16,7 @@ export async function GET(request: Request) {
       );
     }
 
-    const session = verifySessionToken(decodeURIComponent(token));
+    const session = verifySessionToken(token);
     if (!session) {
       return NextResponse.json(
         { success: false, message: "نشست کاربری معتبر نیست یا منقضی شده است" },
