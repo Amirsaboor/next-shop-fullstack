@@ -1,16 +1,16 @@
-import { connection } from "next/server";
-import { NextRequest, NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
 
 import { connectToDatabase } from "@/lib/db/connect";
 import { handleApiError } from "@/lib/api/handle-api-error";
 import { sessionCookie, verifySessionToken } from "@/lib/auth/session";
 import { getPublicUserById } from "@/modules/auth/services/auth.service";
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
-    // This endpoint depends on the incoming request cookie and must not be prerendered.
-    await connection();
-    const token = request.cookies.get(sessionCookie.name)?.value;
+    // Reading the async cookies API makes this request-specific Route Handler dynamic.
+    const cookieStore = await cookies();
+    const token = cookieStore.get(sessionCookie.name)?.value;
 
     if (!token) {
       return NextResponse.json(
