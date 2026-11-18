@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 import { connectToDatabase } from "@/lib/db/connect";
 import { handleApiError } from "@/lib/api/handle-api-error";
-import { createSessionToken, sessionCookie } from "@/lib/auth/session";
+import { assertSessionConfig, createSessionToken, sessionCookie } from "@/lib/auth/session";
 import { registerUser } from "@/modules/auth/services/auth.service";
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -30,6 +30,8 @@ export async function POST(request: Request) {
       }
     }
 
+    // Validate session configuration before creating the user in the database.
+    assertSessionConfig();
     await connectToDatabase();
 
     const user = await registerUser({
