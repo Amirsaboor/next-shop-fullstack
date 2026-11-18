@@ -69,6 +69,14 @@ export async function registerUser(input: RegisterInput) {
     throw new AppError("رمز عبور باید حداقل ۸ کاراکتر باشد", 400);
   }
 
+  if (input.password.length > 128) {
+    throw new AppError("رمز عبور نمی‌تواند بیشتر از ۱۲۸ کاراکتر باشد", 400);
+  }
+
+  if (firstName.length > 60 || lastName.length > 60) {
+    throw new AppError("نام و نام خانوادگی نمی‌توانند بیشتر از ۶۰ کاراکتر باشند", 400);
+  }
+
   const existingUser = await User.findOne({
     $or: [{ username }, { email }, { mobile }],
   }).select("_id username email mobile").lean();
@@ -102,6 +110,10 @@ export async function registerUser(input: RegisterInput) {
 }
 
 export async function loginUser(input: LoginInput) {
+  if (input.identifier.length > 254 || input.password.length > 128) {
+    throw new AppError("اطلاعات ورود معتبر نیست", 400);
+  }
+
   const identifier = input.identifier.trim().toLowerCase();
 
   const user = await User.findOne({
