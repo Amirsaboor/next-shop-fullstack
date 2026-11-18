@@ -9,6 +9,10 @@ type SessionPayload = {
   expiresAt: number;
 };
 
+export function assertSessionConfig() {
+  getSessionSecret();
+}
+
 function getSessionSecret() {
   const secret = process.env.AUTH_SECRET;
   if (!secret || secret.length < 32) {
