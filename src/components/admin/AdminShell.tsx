@@ -15,8 +15,8 @@ const menuItems = [
       { label: "محصولات", href: "/admin/products", icon: "box" },
     ],
   },
-  { label: "سفارش‌ها", href: "/admin/orders", icon: "receipt", soon: true },
-  { label: "کاربران", href: "/admin/users", icon: "users", soon: true },
+  { label: "سفارش‌ها", href: "/admin/orders", icon: "receipt" },
+  { label: "کاربران", href: "/admin/users", icon: "users" },
 ];
 
 function Icon({ name, size = 20 }: { name: string; size?: number }) {
@@ -161,7 +161,7 @@ export default function AdminShell({ children }: { children: ReactNode }) {
                 </div>
               );
             })}
-          </nav>    </nav>
+          </nav>
         </div>
 
         <div className="relative z-10 mt-auto p-3">
