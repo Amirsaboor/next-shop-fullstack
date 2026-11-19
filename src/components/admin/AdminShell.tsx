@@ -6,9 +6,15 @@ import { useEffect, useState, type ReactNode } from "react";
 
 const menuItems = [
   { label: "داشبورد", href: "/admin", icon: "dashboard" },
-  { label: "محصولات", href: "/admin/products", icon: "box", sub: false },
-  { label: "گروه‌ها", href: "/admin/groups", icon: "layers", sub: true },
-  { label: "زیرگروه‌ها", href: "/admin/subgroups", icon: "layers", sub: true },
+  {
+    label: "مدیریت محصولات",
+    icon: "box",
+    children: [
+      { label: "گروه‌ها", href: "/admin/groups", icon: "layers" },
+      { label: "زیرگروه‌ها", href: "/admin/subgroups", icon: "layers" },
+      { label: "محصولات", href: "/admin/products", icon: "box" },
+    ],
+  },
   { label: "سفارش‌ها", href: "/admin/orders", icon: "receipt", soon: true },
   { label: "کاربران", href: "/admin/users", icon: "users", soon: true },
 ];
@@ -42,6 +48,7 @@ export default function AdminShell({ children }: { children: ReactNode }) {
   const [dark, setDark] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [productsMenuOpen, setProductsMenuOpen] = useState(false);
 
   useEffect(() => {
     const savedTheme = window.localStorage.getItem("admin-theme");
@@ -57,6 +64,9 @@ export default function AdminShell({ children }: { children: ReactNode }) {
     setMobileOpen(false);
     setNotificationsOpen(false);
     setProfileOpen(false);
+    if (pathname.startsWith("/admin/products") || pathname.startsWith("/admin/groups") || pathname.startsWith("/admin/subgroups")) {
+      setProductsMenuOpen(true);
+    }
   }, [pathname]);
 
   const sidebarWidth = collapsed ? "lg:mr-[88px]" : "lg:mr-[264px]";
@@ -89,9 +99,53 @@ export default function AdminShell({ children }: { children: ReactNode }) {
           {(!collapsed || mobileOpen) && <p className={`mb-3 px-3 text-[10px] font-semibold tracking-widest ${dark ? "text-white/35" : "text-[#8b94aa]"}`}>منوی اصلی</p>}
           <nav className="space-y-1.5">
             {menuItems.map((item) => {
+              if ("children" in item) {
+                const sectionActive = item.children.some((child) => pathname === child.href || pathname.startsWith(child.href + "/"));
+                const expanded = productsMenuOpen && (!collapsed || mobileOpen);
+                return (
+                  <div key={item.label}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (collapsed && !mobileOpen) {
+                          setCollapsed(false);
+                          setProductsMenuOpen(true);
+                        } else {
+                          setProductsMenuOpen((value) => !value);
+                        }
+                      }}
+                      aria-expanded={expanded}
+                      className={`group flex w-full items-center gap-3 rounded-xl px-3 py-3 text-[13px] transition-all ${collapsed && !mobileOpen ? "justify-center" : ""} ${sectionActive ? (dark ? "font-semibold text-white" : "font-semibold text-[#303a55]") : (dark ? "text-white/65 hover:bg-white/[0.06] hover:text-white" : "text-[#65708a] hover:bg-white/[0.65] hover:text-[#303a55]")}`}
+                    >
+                      <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] transition ${sectionActive ? "bg-[#ff5a1f] text-white shadow-lg shadow-[#ff5a1f]/25" : (dark ? "text-white/60 group-hover:text-white" : "text-[#8490aa] group-hover:text-[#ff5a1f]")}`}><Icon name={item.icon} size={20} /></span>
+                      {(!collapsed || mobileOpen) && <><span className="flex-1 text-right">{item.label}</span><span className={`transition-transform duration-200 ${expanded ? "rotate-90" : ""}`}><Icon name="chevron" size={15} /></span></>}
+                    </button>
+                    {expanded && (
+                      <div className="relative mr-[29px] mt-1 space-y-1 border-r border-[#dce2f0] pr-3 dark:border-white/10">
+                        {item.children.map((child) => {
+                          const active = pathname === child.href || pathname.startsWith(child.href + "/");
+                          return (
+                            <Link
+                              key={child.href}
+                              href={child.href}
+                              title={collapsed && !mobileOpen ? child.label : undefined}
+                              className={`flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-[12px] transition-all ${active ? (dark ? "bg-white/[0.10] font-semibold text-white" : "bg-white/80 font-semibold text-[#303a55] shadow-sm") : (dark ? "text-white/55 hover:bg-white/[0.06] hover:text-white" : "text-[#78829a] hover:bg-white/65 hover:text-[#303a55]")}`}
+                            >
+                              <span className={`h-1.5 w-1.5 rounded-full ${active ? "bg-[#ff5a1f]" : (dark ? "bg-white/25" : "bg-[#aeb7ca]")}`} />
+                              <span>{child.label}</span>
+                              {active && <span className="mr-auto h-1.5 w-1.5 rounded-full bg-[#ff5a1f]" />}
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+
               const active = pathname === item.href;
               return (
-                <div key={item.href} className={`relative ${item.sub ? "mr-5" : ""}`}>
+                <div key={item.href} className="relative">
                   {item.soon ? (
                     <div title={collapsed ? item.label + " - به‌زودی" : "این بخش در مرحله بعد ساخته می‌شود"} className={`flex cursor-not-allowed items-center gap-3 rounded-xl px-3 py-3 text-[13px] ${dark ? "text-white/35" : "text-[#a1a9bb]"} ${collapsed && !mobileOpen ? "justify-center" : ""}`}>
                       <span className="flex h-9 w-9 shrink-0 items-center justify-center"><Icon name={item.icon} size={20} /></span>
@@ -107,7 +161,7 @@ export default function AdminShell({ children }: { children: ReactNode }) {
                 </div>
               );
             })}
-          </nav>
+          </nav>    </nav>
         </div>
 
         <div className="relative z-10 mt-auto p-3">
