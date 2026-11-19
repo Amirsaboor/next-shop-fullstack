@@ -41,6 +41,7 @@ const productVariantSchema = new Schema(
 export const productSchema = new Schema(
   {
     name: { type: String, required: true, trim: true },
+    productCode: { type: String, required: true, unique: true, trim: true, uppercase: true },
     slug: {
       type: String,
       required: true,
