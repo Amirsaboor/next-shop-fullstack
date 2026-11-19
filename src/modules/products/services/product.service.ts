@@ -152,7 +152,12 @@ export async function getProducts(options: GetProductsOptions = {}) {
     name: { name: 1 },
   } as const;
 
-  // Search the store's exact product code first. MongoDB text search
+  // Search product codes by prefix first (for example, KB-10 matches KB-1025).
+  // Keep this separate from MongoDB text search to avoid query planner conflicts.
+  if (searchTerm) {
+    const escapedSearchTerm = searchTerm
+      .toUpperCase()
+      .replace(/[.*+?^${}()|[\]\\]/g, "\\  // Search the store's exact product code first. MongoDB text search
   // cannot be combined with this condition inside the same $or query.
   if (searchTerm) {
     const exactProduct = await Product.findOne({
@@ -172,6 +177,38 @@ export async function getProducts(options: GetProductsOptions = {}) {
           totalPages: 1,
           hasNextPage: false,
           hasPreviousPage: false,
+        },
+      };
+    }
+
+    filter.$text = { $search: searchTerm };
+  }");
+
+    const productCodeFilter = {
+      ...filter,
+      productCode: { $regex: `^${escapedSearchTerm}` },
+    };
+
+    const [matchingCodeProducts, matchingCodeTotal] = await Promise.all([
+      Product.find(productCodeFilter)
+        .sort(sortOptions[options.sort ?? "newest"])
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .populate("category", "name slug")
+        .lean(),
+      Product.countDocuments(productCodeFilter),
+    ]);
+
+    if (matchingCodeTotal > 0) {
+      return {
+        items: matchingCodeProducts,
+        pagination: {
+          page,
+          limit,
+          total: matchingCodeTotal,
+          totalPages: Math.ceil(matchingCodeTotal / limit),
+          hasNextPage: page * limit < matchingCodeTotal,
+          hasPreviousPage: page > 1,
         },
       };
     }
