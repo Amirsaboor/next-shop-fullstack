@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { unstable_rethrow } from "next/navigation";
 
 import { connectToDatabase } from "@/lib/db/connect";
 import { handleApiError } from "@/lib/api/handle-api-error";
@@ -32,6 +33,8 @@ export async function GET() {
 
     return NextResponse.json({ success: true, data: user });
   } catch (error) {
+    // Let Next.js handle its own prerender/request-time control-flow errors.
+    unstable_rethrow(error);
     return handleApiError(error, "GET /api/auth/me error:", "خطا در دریافت اطلاعات کاربر");
   }
 }
