@@ -63,17 +63,17 @@ export default function AdminShell({ children }: { children: ReactNode }) {
   return (
     <div className="admin-theme relative isolate min-h-screen overflow-hidden bg-[#f5f6f8] text-[#17191d] transition-colors dark:bg-[#101216] dark:text-[#f4f5f7]">
       <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-        <div className="absolute -right-36 top-24 h-[430px] w-[430px] rounded-full bg-[#ff5a1f]/[0.10] blur-[110px] dark:bg-[#ff5a1f]/[0.16]" />
-        <div className="absolute left-[18%] top-[42%] h-[360px] w-[360px] rounded-full bg-[#7c8cff]/[0.07] blur-[115px] dark:bg-[#7788ff]/[0.10]" />
-        <div className="absolute bottom-[-180px] right-[34%] h-[360px] w-[360px] rounded-full bg-[#ff9b72]/[0.08] blur-[110px] dark:bg-[#ff784d]/[0.08]" />
+        <div className="absolute -right-36 top-24 h-[430px] w-[430px] rounded-full bg-[#ff5a1f]/[0.14] blur-[105px] dark:bg-[#ff5a1f]/[0.20]" />
+        <div className="absolute left-[18%] top-[42%] h-[360px] w-[360px] rounded-full bg-[#7c8cff]/[0.09] blur-[110px] dark:bg-[#7788ff]/[0.13]" />
+        <div className="absolute bottom-[-180px] right-[34%] h-[360px] w-[360px] rounded-full bg-[#ff9b72]/[0.11] blur-[105px] dark:bg-[#ff784d]/[0.12]" />
       </div>
       {mobileOpen && <button type="button" aria-label="بستن منو" onClick={() => setMobileOpen(false)} className="fixed inset-0 z-40 bg-black/55 backdrop-blur-[2px] lg:hidden" />}
 
-      <aside className={`fixed inset-y-0 right-0 z-50 flex flex-col overflow-hidden border-l border-white/[0.16] bg-[#15191f]/[0.72] text-white shadow-2xl shadow-black/20 backdrop-blur-[36px] transition-all duration-300 ${mobileOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"} ${collapsed ? "w-[264px] lg:w-[88px]" : "w-[264px]"}`}>
+      <aside className={`fixed inset-y-0 right-0 z-50 flex flex-col overflow-hidden border-l border-white/[0.18] bg-[#11151c]/[0.84] text-white shadow-2xl shadow-black/20 backdrop-blur-[36px] transition-all duration-300 ${mobileOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"} ${collapsed ? "w-[264px] lg:w-[88px]" : "w-[264px]"}`}>
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-          <div className="absolute -right-20 top-20 h-64 w-64 rounded-full bg-[#ff5a1f]/25 blur-[75px]" />
-          <div className="absolute -left-24 top-[42%] h-64 w-64 rounded-full bg-[#657cff]/20 blur-[85px]" />
-          <div className="absolute bottom-[-90px] right-8 h-56 w-56 rounded-full bg-[#ff9b72]/15 blur-[75px]" />
+          <div className="absolute -right-20 top-20 h-64 w-64 rounded-full bg-[#ff5a1f]/30 blur-[75px]" />
+          <div className="absolute -left-24 top-[42%] h-64 w-64 rounded-full bg-[#657cff]/24 blur-[85px]" />
+          <div className="absolute bottom-[-90px] right-8 h-56 w-56 rounded-full bg-[#ff9b72]/19 blur-[75px]" />
           <div className="absolute inset-0 bg-gradient-to-b from-white/[0.055] via-transparent to-black/[0.10]" />
         </div>
         <div className={`relative z-10 flex h-[82px] shrink-0 items-center border-b border-white/[0.08] ${collapsed && !mobileOpen ? "justify-center px-3" : "justify-between px-5"}`}>
