@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { connectToDatabase } from "@/lib/db/connect";
 import { handleApiError } from "@/lib/api/handle-api-error";
+import { requireAdmin } from "@/lib/auth/require-admin";
 import { updateCategorySchema } from "@/lib/validations/category.schema";
 import {
   deleteCategory,
@@ -26,6 +27,8 @@ export async function GET(_request: Request, { params }: RouteContext) {
 
 export async function PATCH(request: Request, { params }: RouteContext) {
   try {
+    await requireAdmin();
+
     const { id } = await params;
     const body: unknown = await request.json();
     const validation = updateCategorySchema.safeParse(body);
@@ -47,6 +50,8 @@ export async function PATCH(request: Request, { params }: RouteContext) {
 
 export async function DELETE(_request: Request, { params }: RouteContext) {
   try {
+    await requireAdmin();
+
     const { id } = await params;
     await connectToDatabase();
     await deleteCategory(id);
