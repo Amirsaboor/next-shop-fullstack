@@ -69,38 +69,38 @@ export default function AdminShell({ children }: { children: ReactNode }) {
       </div>
       {mobileOpen && <button type="button" aria-label="بستن منو" onClick={() => setMobileOpen(false)} className="fixed inset-0 z-40 bg-black/55 backdrop-blur-[2px] lg:hidden" />}
 
-      <aside className={`fixed inset-y-0 right-0 z-50 flex flex-col overflow-hidden border-l border-white/[0.18] bg-[#11151c]/[0.84] text-white shadow-2xl shadow-black/20 backdrop-blur-[36px] transition-all duration-300 ${mobileOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"} ${collapsed ? "w-[264px] lg:w-[88px]" : "w-[264px]"}`}>
+      <aside className={`fixed inset-y-0 right-0 z-50 flex flex-col overflow-hidden border-l backdrop-blur-[36px] transition-all duration-300 ${dark ? "border-white/[0.18] bg-[#11151c]/[0.88] text-white shadow-2xl shadow-black/20" : "border-[#dfe4ef]/80 bg-[#f7f8ff]/[0.88] text-[#283044] shadow-2xl shadow-[#6474a8]/[0.12]"} ${mobileOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"} ${collapsed ? "w-[264px] lg:w-[88px]" : "w-[264px]"}`}>
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-          <div className="absolute -right-20 top-20 h-64 w-64 rounded-full bg-[#ff5a1f]/30 blur-[75px]" />
-          <div className="absolute -left-24 top-[42%] h-64 w-64 rounded-full bg-[#657cff]/24 blur-[85px]" />
-          <div className="absolute bottom-[-90px] right-8 h-56 w-56 rounded-full bg-[#ff9b72]/19 blur-[75px]" />
-          <div className="absolute inset-0 bg-gradient-to-b from-white/[0.055] via-transparent to-black/[0.10]" />
+          <div className={`absolute -right-20 top-20 h-64 w-64 rounded-full blur-[75px] ${dark ? "bg-[#ff5a1f]/30" : "bg-[#ff8b62]/[0.30]"}`} />
+          <div className={`absolute -left-24 top-[42%] h-64 w-64 rounded-full blur-[85px] ${dark ? "bg-[#657cff]/24" : "bg-[#8296ff]/[0.28]"}`} />
+          <div className={`absolute bottom-[-90px] right-8 h-56 w-56 rounded-full blur-[75px] ${dark ? "bg-[#ff9b72]/19" : "bg-[#c7a4ff]/[0.24]"}`} />
+          <div className={`absolute inset-0 ${dark ? "bg-gradient-to-b from-white/[0.055] via-transparent to-black/[0.10]" : "bg-gradient-to-br from-white/[0.72] via-white/[0.18] to-[#e9edff]/[0.42]"}`} />
         </div>
-        <div className={`relative z-10 flex h-[82px] shrink-0 items-center border-b border-white/[0.08] ${collapsed && !mobileOpen ? "justify-center px-3" : "justify-between px-5"}`}>
+        <div className={`relative z-10 flex h-[82px] shrink-0 items-center border-b ${dark ? "border-white/[0.08]" : "border-[#dce2f0]/80"} ${collapsed && !mobileOpen ? "justify-center px-3" : "justify-between px-5"}`}>
           <Link href="/admin" className="flex min-w-0 items-center gap-3" title="Saboor Shop">
             <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] bg-[#ff5a1f] text-xl font-black shadow-lg shadow-[#ff5a1f]/20">S</span>
-            {(!collapsed || mobileOpen) && <span className="min-w-0"><span className="block text-[15px] font-bold tracking-tight">Saboor Shop</span><span className="mt-1 block text-[10px] text-white/45">مدیریت فروشگاه</span></span>}
+            {(!collapsed || mobileOpen) && <span className="min-w-0"><span className="block text-[15px] font-bold tracking-tight">Saboor Shop</span><span className={`mt-1 block text-[10px] ${dark ? "text-white/45" : "text-[#77819a]"}`}>مدیریت فروشگاه</span></span>}
           </Link>
           <button type="button" onClick={() => setMobileOpen(false)} className="rounded-lg p-2 text-white/55 hover:bg-white/10 lg:hidden" aria-label="بستن منو"><Icon name="close" /></button>
         </div>
 
         <div className="relative z-10 px-3 pt-7">
-          {(!collapsed || mobileOpen) && <p className="mb-3 px-3 text-[10px] font-semibold tracking-widest text-white/35">منوی اصلی</p>}
+          {(!collapsed || mobileOpen) && <p className={`mb-3 px-3 text-[10px] font-semibold tracking-widest ${dark ? "text-white/35" : "text-[#8b94aa]"}`}>منوی اصلی</p>}
           <nav className="space-y-1.5">
             {menuItems.map((item) => {
               const active = pathname === item.href;
               return (
                 <div key={item.href} className="relative">
                   {item.soon ? (
-                    <div title={collapsed ? item.label + " - به‌زودی" : "این بخش در مرحله بعد ساخته می‌شود"} className={`flex cursor-not-allowed items-center gap-3 rounded-xl px-3 py-3 text-[13px] text-white/35 ${collapsed && !mobileOpen ? "justify-center" : ""}`}>
+                    <div title={collapsed ? item.label + " - به‌زودی" : "این بخش در مرحله بعد ساخته می‌شود"} className={`flex cursor-not-allowed items-center gap-3 rounded-xl px-3 py-3 text-[13px] ${dark ? "text-white/35" : "text-[#a1a9bb]"} ${collapsed && !mobileOpen ? "justify-center" : ""}`}>
                       <span className="flex h-9 w-9 shrink-0 items-center justify-center"><Icon name={item.icon} size={20} /></span>
                       {(!collapsed || mobileOpen) && <><span className="flex-1">{item.label}</span><span className="rounded-md bg-white/[0.07] px-2 py-1 text-[9px] text-white/40">به‌زودی</span></>}
                     </div>
                   ) : (
-                    <Link href={item.href} title={collapsed && !mobileOpen ? item.label : undefined} className={`group flex items-center gap-3 rounded-xl px-3 py-3 text-[13px] transition-all ${collapsed ? "justify-center" : ""} ${active ? "bg-white/[0.11] font-semibold text-white shadow-inner" : "text-white/65 hover:bg-white/[0.06] hover:text-white"}`}>
-                      <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] transition ${active ? "bg-[#ff5a1f] text-white shadow-lg shadow-[#ff5a1f]/20" : "text-white/60 group-hover:text-white"}`}><Icon name={item.icon} size={20} /></span>
+                    <Link href={item.href} title={collapsed && !mobileOpen ? item.label : undefined} className={`group flex items-center gap-3 rounded-xl px-3 py-3 text-[13px] transition-all ${collapsed ? "justify-center" : ""} ${active ? (dark ? "bg-white/[0.11] font-semibold text-white shadow-inner" : "bg-white/[0.78] font-semibold text-[#303a55] shadow-md shadow-[#8996bd]/[0.12] ring-1 ring-[#dfe5f4]") : (dark ? "text-white/65 hover:bg-white/[0.06] hover:text-white" : "text-[#65708a] hover:bg-white/[0.65] hover:text-[#303a55]")}`}>
+                      <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] transition ${active ? "bg-[#ff5a1f] text-white shadow-lg shadow-[#ff5a1f]/25" : (dark ? "text-white/60 group-hover:text-white" : "text-[#8490aa] group-hover:text-[#ff5a1f]")}`}><Icon name={item.icon} size={20} /></span>
                       {(!collapsed || mobileOpen) && <span className="flex-1">{item.label}</span>}
-                      {active && (!collapsed || mobileOpen) && <span className="h-1.5 w-1.5 rounded-full bg-[#ff7a4c]" />}
+                      {active && (!collapsed || mobileOpen) && <span className={`h-1.5 w-1.5 rounded-full ${dark ? "bg-[#ff7a4c]" : "bg-[#ff5a1f]"}`} />}
                     </Link>
                   )}
                 </div>
@@ -110,7 +110,7 @@ export default function AdminShell({ children }: { children: ReactNode }) {
         </div>
 
         <div className="relative z-10 mt-auto p-3">
-          {(!collapsed || mobileOpen) && <div className="rounded-xl border border-white/10 bg-white/[0.035] p-4"><div className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-emerald-400" /><p className="text-[11px] font-semibold">پنل مدیریت</p></div><p className="mt-2 text-[10px] leading-6 text-white/40">مدیریت محصولات، سفارش‌ها و مشتریان فروشگاه</p></div>}
+          {(!collapsed || mobileOpen) && <div className={`rounded-xl border p-4 ${dark ? "border-white/10 bg-white/[0.035]" : "border-[#dce3f2]/80 bg-white/[0.48] shadow-sm shadow-[#8794ba]/[0.08]"}`}><div className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-emerald-400" /><p className={`text-[11px] font-semibold ${dark ? "text-white" : "text-[#39445f]"}`}>پنل مدیریت</p></div><p className={`mt-2 text-[10px] leading-6 ${dark ? "text-white/40" : "text-[#7b849a]"}`}>مدیریت محصولات، سفارش‌ها و مشتریان فروشگاه</p></div>}
           {collapsed && !mobileOpen && <div className="flex justify-center pb-2"><span className="h-2 w-2 rounded-full bg-emerald-400" title="پنل مدیریت" /></div>}
         </div>
       </aside>
