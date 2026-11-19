@@ -6,8 +6,9 @@ import { useEffect, useState, type ReactNode } from "react";
 
 const menuItems = [
   { label: "داشبورد", href: "/admin", icon: "dashboard" },
-  { label: "محصولات", href: "/admin/products", icon: "box", soon: true },
-  { label: "دسته‌بندی‌ها", href: "/admin/categories", icon: "layers", soon: true },
+  { label: "محصولات", href: "/admin/products", icon: "box", sub: false },
+  { label: "گروه‌ها", href: "/admin/groups", icon: "layers", sub: true },
+  { label: "زیرگروه‌ها", href: "/admin/subgroups", icon: "layers", sub: true },
   { label: "سفارش‌ها", href: "/admin/orders", icon: "receipt", soon: true },
   { label: "کاربران", href: "/admin/users", icon: "users", soon: true },
 ];
@@ -90,7 +91,7 @@ export default function AdminShell({ children }: { children: ReactNode }) {
             {menuItems.map((item) => {
               const active = pathname === item.href;
               return (
-                <div key={item.href} className="relative">
+                <div key={item.href} className={`relative ${item.sub ? "mr-5" : ""}`}>
                   {item.soon ? (
                     <div title={collapsed ? item.label + " - به‌زودی" : "این بخش در مرحله بعد ساخته می‌شود"} className={`flex cursor-not-allowed items-center gap-3 rounded-xl px-3 py-3 text-[13px] ${dark ? "text-white/35" : "text-[#a1a9bb]"} ${collapsed && !mobileOpen ? "justify-center" : ""}`}>
                       <span className="flex h-9 w-9 shrink-0 items-center justify-center"><Icon name={item.icon} size={20} /></span>
