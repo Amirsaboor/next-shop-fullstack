@@ -61,11 +61,22 @@ export default function AdminShell({ children }: { children: ReactNode }) {
   const sidebarWidth = collapsed ? "lg:mr-[88px]" : "lg:mr-[264px]";
 
   return (
-    <div className="admin-theme min-h-screen bg-[#f5f6f8] text-[#17191d] transition-colors dark:bg-[#101216] dark:text-[#f4f5f7]">
+    <div className="admin-theme relative isolate min-h-screen overflow-hidden bg-[#f5f6f8] text-[#17191d] transition-colors dark:bg-[#101216] dark:text-[#f4f5f7]">
+      <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+        <div className="absolute -right-36 top-24 h-[430px] w-[430px] rounded-full bg-[#ff5a1f]/[0.10] blur-[110px] dark:bg-[#ff5a1f]/[0.16]" />
+        <div className="absolute left-[18%] top-[42%] h-[360px] w-[360px] rounded-full bg-[#7c8cff]/[0.07] blur-[115px] dark:bg-[#7788ff]/[0.10]" />
+        <div className="absolute bottom-[-180px] right-[34%] h-[360px] w-[360px] rounded-full bg-[#ff9b72]/[0.08] blur-[110px] dark:bg-[#ff784d]/[0.08]" />
+      </div>
       {mobileOpen && <button type="button" aria-label="بستن منو" onClick={() => setMobileOpen(false)} className="fixed inset-0 z-40 bg-black/55 backdrop-blur-[2px] lg:hidden" />}
 
-      <aside className={`fixed inset-y-0 right-0 z-50 flex flex-col border-l border-white/[0.12] bg-[#121417]/90 text-white shadow-2xl shadow-black/10 backdrop-blur-2xl transition-all duration-300 ${mobileOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"} ${collapsed ? "w-[264px] lg:w-[88px]" : "w-[264px]"}`}>
-        <div className={`flex h-[82px] shrink-0 items-center border-b border-white/[0.08] ${collapsed && !mobileOpen ? "justify-center px-3" : "justify-between px-5"}`}>
+      <aside className={`fixed inset-y-0 right-0 z-50 flex flex-col overflow-hidden border-l border-white/[0.16] bg-[#15191f]/[0.72] text-white shadow-2xl shadow-black/20 backdrop-blur-[36px] transition-all duration-300 ${mobileOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"} ${collapsed ? "w-[264px] lg:w-[88px]" : "w-[264px]"}`}>
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+          <div className="absolute -right-20 top-20 h-64 w-64 rounded-full bg-[#ff5a1f]/25 blur-[75px]" />
+          <div className="absolute -left-24 top-[42%] h-64 w-64 rounded-full bg-[#657cff]/20 blur-[85px]" />
+          <div className="absolute bottom-[-90px] right-8 h-56 w-56 rounded-full bg-[#ff9b72]/15 blur-[75px]" />
+          <div className="absolute inset-0 bg-gradient-to-b from-white/[0.055] via-transparent to-black/[0.10]" />
+        </div>
+        <div className={`relative z-10 flex h-[82px] shrink-0 items-center border-b border-white/[0.08] ${collapsed && !mobileOpen ? "justify-center px-3" : "justify-between px-5"}`}>
           <Link href="/admin" className="flex min-w-0 items-center gap-3" title="Saboor Shop">
             <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] bg-[#ff5a1f] text-xl font-black shadow-lg shadow-[#ff5a1f]/20">S</span>
             {(!collapsed || mobileOpen) && <span className="min-w-0"><span className="block text-[15px] font-bold tracking-tight">Saboor Shop</span><span className="mt-1 block text-[10px] text-white/45">مدیریت فروشگاه</span></span>}
@@ -73,7 +84,7 @@ export default function AdminShell({ children }: { children: ReactNode }) {
           <button type="button" onClick={() => setMobileOpen(false)} className="rounded-lg p-2 text-white/55 hover:bg-white/10 lg:hidden" aria-label="بستن منو"><Icon name="close" /></button>
         </div>
 
-        <div className="px-3 pt-7">
+        <div className="relative z-10 px-3 pt-7">
           {(!collapsed || mobileOpen) && <p className="mb-3 px-3 text-[10px] font-semibold tracking-widest text-white/35">منوی اصلی</p>}
           <nav className="space-y-1.5">
             {menuItems.map((item) => {
@@ -98,13 +109,13 @@ export default function AdminShell({ children }: { children: ReactNode }) {
           </nav>
         </div>
 
-        <div className="mt-auto p-3">
+        <div className="relative z-10 mt-auto p-3">
           {(!collapsed || mobileOpen) && <div className="rounded-xl border border-white/10 bg-white/[0.035] p-4"><div className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-emerald-400" /><p className="text-[11px] font-semibold">پنل مدیریت</p></div><p className="mt-2 text-[10px] leading-6 text-white/40">مدیریت محصولات، سفارش‌ها و مشتریان فروشگاه</p></div>}
           {collapsed && !mobileOpen && <div className="flex justify-center pb-2"><span className="h-2 w-2 rounded-full bg-emerald-400" title="پنل مدیریت" /></div>}
         </div>
       </aside>
 
-      <div className={`min-h-screen transition-all duration-300 ${sidebarWidth}`}>
+      <div className={`relative z-10 min-h-screen transition-all duration-300 ${sidebarWidth}`}>
         <header className="sticky top-0 z-30 flex h-[82px] items-center justify-between border-b border-[#e9ebef]/70 bg-white/75 px-4 backdrop-blur-2xl transition-colors dark:border-white/[0.07] dark:bg-[#171a20]/75 sm:px-7">
           <div className="flex items-center gap-3">
             <button type="button" onClick={() => { if (window.matchMedia("(min-width: 1024px)").matches) { setCollapsed((value) => !value); } else { setMobileOpen(true); } }} className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#e8eaee]/80 bg-white/60 text-[#555d68] shadow-sm backdrop-blur-lg transition hover:border-[#ffb69c] hover:bg-[#fff5f0]/80 hover:text-[#ff5a1f] dark:border-white/10 dark:bg-white/[0.06] dark:text-white/70 dark:hover:bg-white/10" aria-label={collapsed ? "باز کردن سایدبار" : "جمع کردن سایدبار"} title={collapsed ? "باز کردن سایدبار" : "جمع کردن سایدبار"}><Icon name="menu" /></button>
