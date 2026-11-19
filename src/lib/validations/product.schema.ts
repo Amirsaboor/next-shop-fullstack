@@ -27,6 +27,7 @@ const variantSchema = z.object({
 
 const productFields = {
   name: z.string().trim().min(2).max(180),
+  productCode: z.string().trim().min(1, "کد محصول الزامی است").max(80),
   slug: z.string().trim().min(2).max(180).regex(/^[a-zA-Z0-9-]+$/),
   description: z.string().max(10000).optional(),
   summary: z.string().max(500).optional(),
