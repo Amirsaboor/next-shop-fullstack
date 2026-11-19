@@ -192,7 +192,7 @@ export async function createOrder(
             shippingCost,
             discount,
             total,
-            currency: "IRT",
+            currency: "TOMAN",
             status: "pending_payment",
             payment: {
               provider: "unconfigured",
