@@ -49,59 +49,6 @@ async function findOrCreateCart(owner: CartOwner) {
   return cart;
 }
 
-function getAvailableStock(
-  product: {
-    hasVariants: boolean;
-    stock: number;
-    variants?: Array<{
-      _id: mongoose.Types.ObjectId;
-      stock: number;
-      isActive: boolean;
-      price: number;
-      compareAtPrice?: number | null;
-      name: string;
-      sku: string;
-      attributes: Array<{ name: string; value: string }>;
-    }>;
-  },
-  variantId?: string | null,
-) {
-  if (product.hasVariants) {
-    if (!variantId) {
-      throw new AppError("لطفاً تنوع موردنظر محصول را انتخاب کنید", 400);
-    }
-
-    const variant = product.variants?.find(
-      (item) => item._id.toString() === variantId && item.isActive,
-    );
-
-    if (!variant) throw new AppError("تنوع انتخاب‌شده موجود نیست", 404);
-
-    return {
-      stock: variant.stock,
-      price: variant.price,
-      compareAtPrice: variant.compareAtPrice ?? null,
-      variant: {
-        id: variant._id.toString(),
-        name: variant.name,
-        sku: variant.sku,
-        attributes: variant.attributes,
-      },
-    };
-  }
-
-  if (variantId) {
-    throw new AppError("این محصول تنوع قابل انتخاب ندارد", 400);
-  }
-
-  return {
-    stock: product.stock,
-    price: product.stock >= 0 ? 0 : 0,
-    compareAtPrice: null,
-    variant: null,
-  };
-}
-
 async function getProductPricing(productId: string, variantId?: string | null) {
   const product = await Product.findOne({
     _id: productId,
@@ -180,7 +127,11 @@ export async function getCart(owner: CartOwner) {
           isAvailable: pricing.stock >= item.quantity,
           lineTotal: pricing.price * item.quantity,
         };
-      } catch {
+      } catch (error) {
+        if (!(error instanceof AppError) || error.statusCode !== 404) {
+          throw error;
+        }
+
         return {
           id: item._id.toString(),
           productId: item.product.toString(),
