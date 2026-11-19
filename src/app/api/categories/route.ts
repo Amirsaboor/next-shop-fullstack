@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { connectToDatabase } from "@/lib/db/connect";
 import { handleApiError } from "@/lib/api/handle-api-error";
+import { requireAdmin } from "@/lib/auth/require-admin";
 import { createCategorySchema } from "@/lib/validations/category.schema";
 import {
   createCategory,
@@ -21,6 +22,8 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    await requireAdmin();
+
     const body: unknown = await request.json();
     const validation = createCategorySchema.safeParse(body);
 
