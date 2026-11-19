@@ -52,9 +52,9 @@ const paymentSchema = new Schema(
   {
     provider: {
       type: String,
-      enum: ["unconfigured"],
       default: "unconfigured",
       required: true,
+      trim: true,
     },
     status: {
       type: String,
