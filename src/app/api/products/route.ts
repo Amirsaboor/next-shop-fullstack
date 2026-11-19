@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { connectToDatabase } from "@/lib/db/connect";
 import { handleApiError } from "@/lib/api/handle-api-error";
+import { requireAdmin } from "@/lib/auth/require-admin";
 import { createProductSchema, productQuerySchema } from "@/lib/validations/product.schema";
 import { createProduct, getProducts } from "@/modules/products/services/product.service";
 
@@ -32,6 +33,8 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    await requireAdmin();
+
     const body: unknown = await request.json();
     const validation = createProductSchema.safeParse(body);
 
