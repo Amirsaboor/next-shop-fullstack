@@ -155,38 +155,17 @@ export async function getProducts(options: GetProductsOptions = {}) {
   // Search product codes by prefix first (for example, KB-10 matches KB-1025).
   // Keep this separate from MongoDB text search to avoid query planner conflicts.
   if (searchTerm) {
-    const escapedSearchTerm = searchTerm
-      .toUpperCase()
-      .replace(/[.*+?^${}()|[\]\\]/g, "\\  // Search the store's exact product code first. MongoDB text search
-  // cannot be combined with this condition inside the same $or query.
-  if (searchTerm) {
-    const exactProduct = await Product.findOne({
-      ...filter,
-      productCode: searchTerm.toUpperCase(),
-    })
-      .populate("category", "name slug")
-      .lean();
-
-    if (exactProduct) {
-      return {
-        items: [exactProduct],
-        pagination: {
-          page,
-          limit,
-          total: 1,
-          totalPages: 1,
-          hasNextPage: false,
-          hasPreviousPage: false,
-        },
-      };
-    }
-
-    filter.$text = { $search: searchTerm };
-  }");
+    const normalizedSearch = searchTerm.toUpperCase();
+    const escapedSearch = normalizedSearch
+      .split("")
+      .map((character) =>
+        ".*+?^${}()|[]\\".includes(character) ? "\\" + character : character,
+      )
+      .join("");
 
     const productCodeFilter = {
       ...filter,
-      productCode: { $regex: `^${escapedSearchTerm}` },
+      productCode: { $regex: "^" + escapedSearch },
     };
 
     const [matchingCodeProducts, matchingCodeTotal] = await Promise.all([
