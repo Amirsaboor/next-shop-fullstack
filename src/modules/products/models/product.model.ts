@@ -41,7 +41,7 @@ const productVariantSchema = new Schema(
 export const productSchema = new Schema(
   {
     name: { type: String, required: true, trim: true },
-    productCode: { type: String, required: true, unique: true, trim: true, uppercase: true },
+    productCode: { type: String, required: true, trim: true, uppercase: true },
     slug: {
       type: String,
       required: true,
@@ -72,6 +72,7 @@ export const productSchema = new Schema(
   { timestamps: true },
 );
 
+productSchema.index({ productCode: 1 }, { unique: true, partialFilterExpression: { productCode: { $type: "string" } } });
 productSchema.index({ name: "text", summary: "text", description: "text", tags: "text" });
 productSchema.index({ category: 1, isActive: 1, sortOrder: 1 });
 productSchema.index({ price: 1, isActive: 1 });
