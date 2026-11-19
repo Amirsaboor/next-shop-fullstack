@@ -4,7 +4,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 
-const menuItems = [
+type MenuChild = { label: string; href: string; icon: string };
+type MenuItem = { label: string; icon: string } & (
+  | { href: string; soon?: boolean; children?: never }
+  | { children: MenuChild[]; href?: never; soon?: never }
+);
+
+const menuItems: MenuItem[] = [
   { label: "داشبورد", href: "/admin", icon: "dashboard" },
   {
     label: "مدیریت محصولات",
@@ -99,7 +105,7 @@ export default function AdminShell({ children }: { children: ReactNode }) {
           {(!collapsed || mobileOpen) && <p className={`mb-3 px-3 text-[10px] font-semibold tracking-widest ${dark ? "text-white/35" : "text-[#8b94aa]"}`}>منوی اصلی</p>}
           <nav className="space-y-1.5">
             {menuItems.map((item) => {
-              if ("children" in item) {
+              if (item.children) {
                 const sectionActive = item.children.some((child) => pathname === child.href || pathname.startsWith(child.href + "/"));
                 const expanded = productsMenuOpen && (!collapsed || mobileOpen);
                 return (
