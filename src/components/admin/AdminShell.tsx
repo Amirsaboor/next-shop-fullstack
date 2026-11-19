@@ -64,7 +64,7 @@ export default function AdminShell({ children }: { children: ReactNode }) {
     <div className="admin-theme min-h-screen bg-[#f5f6f8] text-[#17191d] transition-colors dark:bg-[#101216] dark:text-[#f4f5f7]">
       {mobileOpen && <button type="button" aria-label="بستن منو" onClick={() => setMobileOpen(false)} className="fixed inset-0 z-40 bg-black/55 backdrop-blur-[2px] lg:hidden" />}
 
-      <aside className={`fixed inset-y-0 right-0 z-50 flex flex-col border-l border-white/[0.07] bg-[#121417] text-white shadow-2xl shadow-black/10 transition-all duration-300 ${mobileOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"} ${collapsed ? "w-[264px] lg:w-[88px]" : "w-[264px]"}`}>
+      <aside className={`fixed inset-y-0 right-0 z-50 flex flex-col border-l border-white/[0.12] bg-[#121417]/90 text-white shadow-2xl shadow-black/10 backdrop-blur-2xl transition-all duration-300 ${mobileOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"} ${collapsed ? "w-[264px] lg:w-[88px]" : "w-[264px]"}`}>
         <div className={`flex h-[82px] shrink-0 items-center border-b border-white/[0.08] ${collapsed && !mobileOpen ? "justify-center px-3" : "justify-between px-5"}`}>
           <Link href="/admin" className="flex min-w-0 items-center gap-3" title="Saboor Shop">
             <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] bg-[#ff5a1f] text-xl font-black shadow-lg shadow-[#ff5a1f]/20">S</span>
@@ -99,19 +99,15 @@ export default function AdminShell({ children }: { children: ReactNode }) {
         </div>
 
         <div className="mt-auto p-3">
-          <button type="button" onClick={() => setCollapsed((value) => !value)} className="mb-3 hidden h-10 w-full items-center justify-center gap-2 rounded-xl border border-white/10 text-xs text-white/55 transition hover:bg-white/[0.06] hover:text-white lg:flex" title={collapsed ? "باز کردن منو" : "جمع کردن منو"}>
-            <span className={`transition-transform ${collapsed ? "rotate-180" : ""}`}><Icon name="chevron" size={17} /></span>
-            {!collapsed && <span>جمع کردن منو</span>}
-          </button>
           {(!collapsed || mobileOpen) && <div className="rounded-xl border border-white/10 bg-white/[0.035] p-4"><div className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-emerald-400" /><p className="text-[11px] font-semibold">پنل مدیریت</p></div><p className="mt-2 text-[10px] leading-6 text-white/40">مدیریت محصولات، سفارش‌ها و مشتریان فروشگاه</p></div>}
           {collapsed && !mobileOpen && <div className="flex justify-center pb-2"><span className="h-2 w-2 rounded-full bg-emerald-400" title="پنل مدیریت" /></div>}
         </div>
       </aside>
 
       <div className={`min-h-screen transition-all duration-300 ${sidebarWidth}`}>
-        <header className="sticky top-0 z-30 flex h-[82px] items-center justify-between border-b border-[#e9ebef] bg-white/90 px-4 backdrop-blur-xl transition-colors dark:border-white/[0.07] dark:bg-[#171a20]/90 sm:px-7">
+        <header className="sticky top-0 z-30 flex h-[82px] items-center justify-between border-b border-[#e9ebef]/70 bg-white/75 px-4 backdrop-blur-2xl transition-colors dark:border-white/[0.07] dark:bg-[#171a20]/75 sm:px-7">
           <div className="flex items-center gap-3">
-            <button type="button" onClick={() => setMobileOpen(true)} className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#e8eaee] text-[#555d68] transition hover:border-[#ffb69c] hover:text-[#ff5a1f] dark:border-white/10 dark:text-white/70 lg:hidden" aria-label="باز کردن منو"><Icon name="menu" /></button>
+            <button type="button" onClick={() => { if (window.matchMedia("(min-width: 1024px)").matches) { setCollapsed((value) => !value); } else { setMobileOpen(true); } }} className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#e8eaee]/80 bg-white/60 text-[#555d68] shadow-sm backdrop-blur-lg transition hover:border-[#ffb69c] hover:bg-[#fff5f0]/80 hover:text-[#ff5a1f] dark:border-white/10 dark:bg-white/[0.06] dark:text-white/70 dark:hover:bg-white/10" aria-label={collapsed ? "باز کردن سایدبار" : "جمع کردن سایدبار"} title={collapsed ? "باز کردن سایدبار" : "جمع کردن سایدبار"}><Icon name="menu" /></button>
             <div><p className="text-[14px] font-bold">داشبورد</p><p className="mt-1 text-[10px] text-[#9298a2] dark:text-white/40">خلاصه وضعیت فروشگاه شما</p></div>
           </div>
 
