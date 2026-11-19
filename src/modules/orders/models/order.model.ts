@@ -98,7 +98,7 @@ const orderSchema = new Schema(
     shippingCost: { type: Number, default: 0, min: 0 },
     discount: { type: Number, default: 0, min: 0 },
     total: { type: Number, required: true, min: 0 },
-    currency: { type: String, default: "IRT", required: true },
+    currency: { type: String, default: "TOMAN", required: true },
     status: {
       type: String,
       enum: [
