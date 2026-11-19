@@ -10,6 +10,32 @@ import Order from "@/modules/orders/models/order.model";
 import Product from "@/modules/products/models/product.model";
 import type { CreateOrderInput } from "@/lib/validations/order.schema";
 
+type OrderProductImage = { url: string; isPrimary: boolean };
+
+type OrderProductVariant = {
+  _id: mongoose.Types.ObjectId;
+  isActive: boolean;
+  stock: number;
+  price: number;
+  compareAtPrice?: number | null;
+  name: string;
+  sku: string;
+  attributes: Array<{ name: string; value: string }>;
+};
+
+type OrderProduct = {
+  _id: mongoose.Types.ObjectId;
+  productCode: string;
+  name: string;
+  slug: string;
+  price: number;
+  compareAtPrice?: number | null;
+  stock: number;
+  hasVariants: boolean;
+  variants: OrderProductVariant[];
+  images: OrderProductImage[];
+};
+
 function createOrderNumber() {
   const date = new Date();
   const datePart = [
@@ -50,12 +76,12 @@ export async function createOrder(
       const orderItems = [];
 
       for (const cartItem of cart.items) {
-        const product = await Product.findOne({
+        const product = (await Product.findOne({
           _id: cartItem.product,
           isActive: true,
         })
           .session(session)
-          .lean();
+          .lean()) as OrderProduct | null;
 
         if (!product) {
           throw new AppError(

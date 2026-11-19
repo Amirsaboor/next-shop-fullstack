@@ -15,6 +15,32 @@ type CartItemDocument = {
   quantity: number;
 };
 
+type ProductImage = { url: string; isPrimary: boolean };
+
+type ProductVariant = {
+  _id: mongoose.Types.ObjectId;
+  isActive: boolean;
+  stock: number;
+  price: number;
+  compareAtPrice?: number | null;
+  name: string;
+  sku: string;
+  attributes: Array<{ name: string; value: string }>;
+};
+
+type CartProduct = {
+  _id: mongoose.Types.ObjectId;
+  hasVariants: boolean;
+  variants: ProductVariant[];
+  images: ProductImage[];
+  productCode: string;
+  name: string;
+  slug: string;
+  stock: number;
+  price: number;
+  compareAtPrice?: number | null;
+};
+
 function ownerFilter(owner: CartOwner) {
   return "userId" in owner
     ? { user: owner.userId }
@@ -50,10 +76,10 @@ async function findOrCreateCart(owner: CartOwner) {
 }
 
 async function getProductPricing(productId: string, variantId?: string | null) {
-  const product = await Product.findOne({
+  const product = (await Product.findOne({
     _id: productId,
     isActive: true,
-  }).lean();
+  }).lean()) as CartProduct | null;
 
   if (!product) throw new AppError("محصول پیدا نشد یا غیرفعال است", 404);
 
@@ -91,7 +117,7 @@ async function getProductPricing(productId: string, variantId?: string | null) {
 export async function getCart(owner: CartOwner) {
   const cart = await findOrCreateCart(owner);
   const items = await Promise.all(
-    cart.items.map(async (item: CartItemDocument) => {
+    (cart.items as unknown as CartItemDocument[]).map(async (item) => {
       try {
         const pricing = await getProductPricing(
           item.product.toString(),
