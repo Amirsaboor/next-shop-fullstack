@@ -28,6 +28,7 @@ export type ProductVariantInput = {
 
 export type CreateProductInput = {
   name: string;
+  productCode: string;
   slug: string;
   description?: string;
   summary?: string;
@@ -133,7 +134,11 @@ export async function getProducts(options: GetProductsOptions = {}) {
   }
 
   if (options.search?.trim()) {
-    filter.$text = { $search: options.search.trim() };
+    const searchTerm = options.search.trim();
+    filter.$or = [
+      { productCode: searchTerm.toUpperCase() },
+      { $text: { $search: searchTerm } },
+    ];
   }
 
   if (options.featured !== undefined) filter.isFeatured = options.featured;
@@ -201,6 +206,7 @@ export async function createProduct(input: CreateProductInput) {
 
   const product = await Product.create({
     ...input,
+    productCode: input.productCode.trim().toUpperCase(),
     hasVariants,
     variants,
     slug: input.slug.toLowerCase(),
@@ -242,6 +248,7 @@ export async function updateProduct(id: string, input: UpdateProductInput) {
 
   const updateData = {
     ...input,
+    ...(input.productCode ? { productCode: input.productCode.trim().toUpperCase() } : {}),
     ...(input.slug ? { slug: input.slug.toLowerCase() } : {}),
     ...(input.tags ? { tags: input.tags.map((tag) => tag.trim()).filter(Boolean) } : {}),
   };
