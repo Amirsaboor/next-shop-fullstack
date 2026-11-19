@@ -2,120 +2,94 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 const menuItems = [
-  { label: "داشبورد", href: "/admin", icon: "grid" },
+  { label: "داشبورد", href: "/admin", icon: "dashboard" },
   { label: "محصولات", href: "/admin/products", icon: "box", soon: true },
   { label: "دسته‌بندی‌ها", href: "/admin/categories", icon: "layers", soon: true },
   { label: "سفارش‌ها", href: "/admin/orders", icon: "receipt", soon: true },
   { label: "کاربران", href: "/admin/users", icon: "users", soon: true },
 ];
 
-function MenuIcon({ name }: { name: string }) {
-  const common = {
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: 1.8,
-    strokeLinecap: "round" as const,
-    strokeLinejoin: "round" as const,
+function Icon({ name, size = 20 }: { name: string; size?: number }) {
+  const common = { fill: "none", stroke: "currentColor", strokeWidth: 1.7, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
+  const paths: Record<string, ReactNode> = {
+    dashboard: <><rect x="3" y="3" width="8" height="8" rx="2" /><rect x="13" y="3" width="8" height="5" rx="2" /><rect x="13" y="10" width="8" height="11" rx="2" /><rect x="3" y="13" width="8" height="8" rx="2" /></>,
+    box: <><path d="m12 3 9 5-9 5-9-5 9-5Z" /><path d="m3 8 9 5 9-5M3 8v9l9 5 9-5V8M12 13v9" /></>,
+    layers: <><path d="m12 3 9 5-9 5-9-5 9-5Z" /><path d="m3 12 9 5 9-5M3 16l9 5 9-5" /></>,
+    receipt: <><path d="M5 3h14v18l-3-2-4 2-4-2-3 2V3Z" /><path d="M8 8h8M8 12h8M8 16h4" /></>,
+    users: <><circle cx="9" cy="8" r="3" /><path d="M3 20v-1a6 6 0 0 1 12 0v1M16 5a3 3 0 0 1 0 6M18 14a5 5 0 0 1 3 5v1" /></>,
+    menu: <><path d="M4 6h16M4 12h16M4 18h16" /></>,
+    chevron: <path d="m9 18 6-6-6-6" />,
+    bell: <><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" /></>,
+    moon: <path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5 8.5 8.5 0 1 0 20.5 14.5Z" />,
+    sun: <><circle cx="12" cy="12" r="4" /><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42" /></>,
+    user: <><circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" /></>,
+    logout: <><path d="M10 17l5-5-5-5M15 12H3" /><path d="M12 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6" /></>,
+    settings: <><circle cx="12" cy="12" r="3" /><path d="m19.4 15 .1.1 1.4 1.1-1.4 2.4-1.7-.6a8 8 0 0 1-1.5.9l-.3 1.8h-2.8l-.3-1.8a8 8 0 0 1-1.5-.9l-1.7.6-1.4-2.4 1.4-1.1a7 7 0 0 1 0-1.8l-1.4-1.1 1.4-2.4 1.7.6a8 8 0 0 1 1.5-.9l.3-1.8h2.8l.3 1.8a8 8 0 0 1 1.5.9l1.7-.6 1.4 2.4-1.4 1.1a7 7 0 0 1 0 1.7Z" /></>,
+    close: <path d="m18 6-12 12M6 6l12 12" />,
   };
 
-  switch (name) {
-    case "box":
-      return <svg viewBox="0 0 24 24" {...common}><path d="m12 3 9 5-9 5-9-5 9-5Z" /><path d="m3 8 9 5 9-5M3 8v9l9 5 9-5V8M12 13v9" /></svg>;
-    case "layers":
-      return <svg viewBox="0 0 24 24" {...common}><path d="m12 3 9 5-9 5-9-5 9-5Z" /><path d="m3 12 9 5 9-5M3 16l9 5 9-5" /></svg>;
-    case "receipt":
-      return <svg viewBox="0 0 24 24" {...common}><path d="M5 3h14v18l-3-2-4 2-4-2-3 2V3Z" /><path d="M8 8h8M8 12h8M8 16h4" /></svg>;
-    case "users":
-      return <svg viewBox="0 0 24 24" {...common}><circle cx="9" cy="8" r="3" /><path d="M3 20v-1a6 6 0 0 1 12 0v1M16 5a3 3 0 0 1 0 6M18 14a5 5 0 0 1 3 5v1" /></svg>;
-    default:
-      return <svg viewBox="0 0 24 24" {...common}><rect x="3" y="3" width="8" height="8" rx="2" /><rect x="13" y="3" width="8" height="5" rx="2" /><rect x="13" y="10" width="8" height="11" rx="2" /><rect x="3" y="13" width="8" height="8" rx="2" /></svg>;
-  }
+  return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" {...common}>{paths[name] ?? paths.dashboard}</svg>;
 }
 
 export default function AdminShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+  const [dark, setDark] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+
+  useEffect(() => {
+    const savedTheme = window.localStorage.getItem("admin-theme");
+    if (savedTheme === "dark") setDark(true);
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", dark);
+    window.localStorage.setItem("admin-theme", dark ? "dark" : "light");
+  }, [dark]);
+
+  useEffect(() => {
+    setMobileOpen(false);
+    setNotificationsOpen(false);
+    setProfileOpen(false);
+  }, [pathname]);
+
+  const sidebarWidth = collapsed ? "lg:mr-[88px]" : "lg:mr-[264px]";
 
   return (
-    <div className="min-h-screen bg-[#f4f5f7] text-[#121417]">
-      {sidebarOpen && (
-        <button
-          type="button"
-          aria-label="بستن منو"
-          onClick={() => setSidebarOpen(false)}
-          className="fixed inset-0 z-40 bg-black/50 lg:hidden"
-        />
-      )}
+    <div className="admin-theme min-h-screen bg-[#f5f6f8] text-[#17191d] transition-colors dark:bg-[#101216] dark:text-[#f4f5f7]">
+      {mobileOpen && <button type="button" aria-label="بستن منو" onClick={() => setMobileOpen(false)} className="fixed inset-0 z-40 bg-black/55 backdrop-blur-[2px] lg:hidden" />}
 
-      <aside
-        className={`fixed inset-y-0 right-0 z-50 flex flex-col border-l border-white/10 bg-[#121417] text-white transition-all duration-300 ${sidebarOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"} ${collapsed ? "w-[82px]" : "w-[260px]"}`}
-      >
-        <div className="flex h-[76px] items-center justify-between border-b border-white/10 px-5">
-          {(!collapsed || sidebarOpen) && (
-            <Link href="/admin" className="flex items-center gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#ff5a1f] text-lg font-black">S</span>
-              <span>
-                <span className="block text-sm font-bold">Saboor Shop</span>
-                <span className="mt-0.5 block text-[11px] text-white/45">مدیریت فروشگاه</span>
-              </span>
-            </Link>
-          )}
-          <button
-            type="button"
-            onClick={() => setCollapsed((value) => !value)}
-            className="hidden h-9 w-9 items-center justify-center rounded-lg text-white/60 transition hover:bg-white/10 hover:text-white lg:flex"
-            aria-label="جمع کردن منو"
-          >
-            <span className="text-xl">{collapsed ? "‹" : "›"}</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setSidebarOpen(false)}
-            className="flex h-9 w-9 items-center justify-center rounded-lg text-white/60 hover:bg-white/10 lg:hidden"
-            aria-label="بستن منو"
-          >
-            ×
-          </button>
+      <aside className={`fixed inset-y-0 right-0 z-50 flex flex-col border-l border-white/[0.07] bg-[#121417] text-white shadow-2xl shadow-black/10 transition-all duration-300 ${mobileOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"} ${collapsed ? "w-[88px]" : "w-[264px]"}`}>
+        <div className={`flex h-[82px] shrink-0 items-center border-b border-white/[0.08] ${collapsed ? "justify-center px-3" : "justify-between px-5"}`}>
+          <Link href="/admin" className="flex min-w-0 items-center gap-3" title="Saboor Shop">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] bg-[#ff5a1f] text-xl font-black shadow-lg shadow-[#ff5a1f]/20">S</span>
+            {!collapsed && <span className="min-w-0"><span className="block text-[15px] font-bold tracking-tight">Saboor Shop</span><span className="mt-1 block text-[10px] text-white/45">مدیریت فروشگاه</span></span>}
+          </Link>
+          <button type="button" onClick={() => setMobileOpen(false)} className="rounded-lg p-2 text-white/55 hover:bg-white/10 lg:hidden" aria-label="بستن منو"><Icon name="close" /></button>
         </div>
 
-        <div className="px-4 pt-7">
-          {(!collapsed || sidebarOpen) && (
-            <p className="mb-3 px-3 text-[10px] font-semibold tracking-wider text-white/35">مدیریت</p>
-          )}
+        <div className="px-3 pt-7">
+          {!collapsed && <p className="mb-3 px-3 text-[10px] font-semibold tracking-widest text-white/35">منوی اصلی</p>}
           <nav className="space-y-1.5">
             {menuItems.map((item) => {
               const active = pathname === item.href;
-              const content = (
-                <>
-                  <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${active ? "bg-[#ff5a1f] text-white" : "text-white/60"}`}>
-                    <span className="h-[18px] w-[18px]"><MenuIcon name={item.icon} /></span>
-                  </span>
-                  {(!collapsed || sidebarOpen) && (
-                    <>
-                      <span className="flex-1 text-right">{item.label}</span>
-                      {item.soon && <span className="rounded-md bg-white/10 px-2 py-1 text-[9px] text-white/45">به‌زودی</span>}
-                    </>
-                  )}
-                </>
-              );
-
               return (
-                <div key={item.href}>
+                <div key={item.href} className="relative">
                   {item.soon ? (
-                    <div title="این بخش در مرحله بعد ساخته می‌شود" className="flex cursor-not-allowed items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] text-white/35">
-                      {content}
+                    <div title={collapsed ? item.label + " - به‌زودی" : "این بخش در مرحله بعد ساخته می‌شود"} className={`flex cursor-not-allowed items-center gap-3 rounded-xl px-3 py-3 text-[13px] text-white/35 ${collapsed ? "justify-center" : ""}`}>
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center"><Icon name={item.icon} size={20} /></span>
+                      {!collapsed && <><span className="flex-1">{item.label}</span><span className="rounded-md bg-white/[0.07] px-2 py-1 text-[9px] text-white/40">به‌زودی</span></>}
                     </div>
                   ) : (
-                    <Link
-                      href={item.href}
-                      onClick={() => setSidebarOpen(false)}
-                      className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] transition ${active ? "bg-white/10 font-semibold text-white" : "text-white/65 hover:bg-white/[0.06] hover:text-white"}`}
-                    >
-                      {content}
+                    <Link href={item.href} title={collapsed ? item.label : undefined} className={`group flex items-center gap-3 rounded-xl px-3 py-3 text-[13px] transition-all ${collapsed ? "justify-center" : ""} ${active ? "bg-white/[0.11] font-semibold text-white shadow-inner" : "text-white/65 hover:bg-white/[0.06] hover:text-white"}`}>
+                      <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] transition ${active ? "bg-[#ff5a1f] text-white shadow-lg shadow-[#ff5a1f]/20" : "text-white/60 group-hover:text-white"}`}><Icon name={item.icon} size={20} /></span>
+                      {!collapsed && <span className="flex-1">{item.label}</span>}
+                      {active && !collapsed && <span className="h-1.5 w-1.5 rounded-full bg-[#ff7a4c]" />}
                     </Link>
                   )}
                 </div>
@@ -124,41 +98,42 @@ export default function AdminShell({ children }: { children: ReactNode }) {
           </nav>
         </div>
 
-        <div className="mt-auto p-4">
-          <div className={`rounded-xl border border-white/10 bg-white/[0.04] p-3 ${collapsed ? "text-center" : ""}`}>
-            {(!collapsed || sidebarOpen) ? (
-              <>
-                <p className="text-xs font-semibold">پنل مدیریت</p>
-                <p className="mt-1 text-[11px] leading-5 text-white/45">بخش‌های فروشگاه به‌تدریج به این پنل متصل می‌شوند.</p>
-              </>
-            ) : <span className="text-xs text-white/50">پنل</span>}
-          </div>
+        <div className="mt-auto p-3">
+          <button type="button" onClick={() => setCollapsed((value) => !value)} className="mb-3 hidden h-10 w-full items-center justify-center gap-2 rounded-xl border border-white/10 text-xs text-white/55 transition hover:bg-white/[0.06] hover:text-white lg:flex" title={collapsed ? "باز کردن منو" : "جمع کردن منو"}>
+            <span className={`transition-transform ${collapsed ? "rotate-180" : ""}`}><Icon name="chevron" size={17} /></span>
+            {!collapsed && <span>جمع کردن منو</span>}
+          </button>
+          {!collapsed && <div className="rounded-xl border border-white/10 bg-white/[0.035] p-4"><div className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-emerald-400" /><p className="text-[11px] font-semibold">پنل مدیریت</p></div><p className="mt-2 text-[10px] leading-6 text-white/40">مدیریت محصولات، سفارش‌ها و مشتریان فروشگاه</p></div>}
+          {collapsed && <div className="flex justify-center pb-2"><span className="h-2 w-2 rounded-full bg-emerald-400" title="پنل مدیریت" /></div>}
         </div>
       </aside>
 
-      <div className={`min-h-screen transition-all duration-300 ${collapsed ? "lg:mr-[82px]" : "lg:mr-[260px]"}`}>
-        <header className="sticky top-0 z-30 flex h-[76px] items-center justify-between border-b border-black/5 bg-white/85 px-4 backdrop-blur-xl sm:px-7">
+      <div className={`min-h-screen transition-all duration-300 ${sidebarWidth}`}>
+        <header className="sticky top-0 z-30 flex h-[82px] items-center justify-between border-b border-[#e9ebef] bg-white/90 px-4 backdrop-blur-xl transition-colors dark:border-white/[0.07] dark:bg-[#171a20]/90 sm:px-7">
           <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => setSidebarOpen(true)}
-              className="flex h-10 w-10 items-center justify-center rounded-xl border border-black/10 text-xl text-[#34383f] lg:hidden"
-              aria-label="باز کردن منو"
-            >
-              ☰
-            </button>
-            <div>
-              <p className="text-sm font-bold">پنل مدیریت</p>
-              <p className="mt-1 text-[11px] text-[#8b9099]">مدیریت و نظارت بر فروشگاه</p>
-            </div>
+            <button type="button" onClick={() => setMobileOpen(true)} className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#e8eaee] text-[#555d68] transition hover:border-[#ffb69c] hover:text-[#ff5a1f] dark:border-white/10 dark:text-white/70 lg:hidden" aria-label="باز کردن منو"><Icon name="menu" /></button>
+            <div><p className="text-[14px] font-bold">داشبورد</p><p className="mt-1 text-[10px] text-[#9298a2] dark:text-white/40">خلاصه وضعیت فروشگاه شما</p></div>
           </div>
-          <div className="flex items-center gap-3">
-            <span className="hidden text-xs text-[#777d86] sm:block">مدیر فروشگاه</span>
-            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#121417] text-sm font-bold text-white">م</span>
+
+          <div className="flex items-center gap-2 sm:gap-3">
+            <button type="button" onClick={() => setDark((value) => !value)} aria-label={dark ? "فعال کردن تم روشن" : "فعال کردن تم تاریک"} title={dark ? "تم روشن" : "تم تاریک"} className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#e8eaee] text-[#68717d] transition hover:border-[#ffb69c] hover:bg-[#fff5f0] hover:text-[#ff5a1f] dark:border-white/10 dark:text-white/70 dark:hover:bg-white/10"><Icon name={dark ? "sun" : "moon"} size={19} /></button>
+
+            <div className="relative">
+              <button type="button" onClick={() => { setNotificationsOpen((value) => !value); setProfileOpen(false); }} aria-label="اعلان‌ها" aria-expanded={notificationsOpen} className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-[#e8eaee] text-[#68717d] transition hover:border-[#ffb69c] hover:bg-[#fff5f0] hover:text-[#ff5a1f] dark:border-white/10 dark:text-white/70 dark:hover:bg-white/10"><Icon name="bell" size={19} /><span className="absolute right-[9px] top-[8px] h-2 w-2 rounded-full border-2 border-white bg-[#ff5a1f] dark:border-[#171a20]" /></button>
+              {notificationsOpen && <div className="absolute left-0 top-12 z-50 w-[min(300px,calc(100vw-32px))] rounded-2xl border border-[#e9ebef] bg-white p-4 text-[#17191d] shadow-xl dark:border-white/10 dark:bg-[#20242c] dark:text-white"><div className="flex items-center justify-between"><p className="text-sm font-bold">اعلان‌ها</p><span className="rounded-full bg-[#fff0e9] px-2 py-1 text-[9px] text-[#e94b12]">جدید</span></div><div className="mt-4 rounded-xl bg-[#f7f8fa] p-3 dark:bg-white/[0.05]"><p className="text-xs font-medium">هنوز اعلان جدیدی ندارید</p><p className="mt-1 text-[10px] leading-5 text-[#9298a2] dark:text-white/45">رویدادهای مهم فروشگاه در این قسمت نمایش داده می‌شوند.</p></div></div>}
+            </div>
+
+            <div className="relative">
+              <button type="button" onClick={() => { setProfileOpen((value) => !value); setNotificationsOpen(false); }} aria-label="منوی کاربری" aria-expanded={profileOpen} className="flex items-center gap-2 rounded-xl p-1.5 transition hover:bg-[#f4f5f7] dark:hover:bg-white/[0.06]">
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#171a20] text-xs font-bold text-white ring-2 ring-[#f0f1f3] dark:bg-[#ff5a1f] dark:ring-white/10">م</span>
+                <span className="hidden text-right sm:block"><span className="block text-[11px] font-bold">مدیر فروشگاه</span><span className="mt-0.5 block text-[9px] text-[#9298a2] dark:text-white/40">مدیر سیستم</span></span>
+              </button>
+              {profileOpen && <div className="absolute left-0 top-12 z-50 w-52 rounded-2xl border border-[#e9ebef] bg-white p-2 text-[#17191d] shadow-xl dark:border-white/10 dark:bg-[#20242c] dark:text-white"><div className="border-b border-[#eef0f2] px-3 py-2 dark:border-white/10"><p className="text-xs font-bold">مدیر فروشگاه</p><p className="mt-1 text-[10px] text-[#9298a2]">حساب مدیریت</p></div><button type="button" onClick={() => setProfileOpen(false)} className="mt-1 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-xs text-[#555d68] hover:bg-[#f5f6f8] dark:text-white/70 dark:hover:bg-white/[0.06]"><Icon name="user" size={16} /> پروفایل کاربری</button><button type="button" onClick={() => setProfileOpen(false)} className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-xs text-[#555d68] hover:bg-[#f5f6f8] dark:text-white/70 dark:hover:bg-white/[0.06]"><Icon name="settings" size={16} /> تنظیمات</button><div className="mt-1 border-t border-[#eef0f2] pt-1 dark:border-white/10"><button type="button" onClick={() => setProfileOpen(false)} className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-xs text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10"><Icon name="logout" size={16} /> خروج از حساب</button></div></div>}
+            </div>
           </div>
         </header>
 
-        <main className="mx-auto w-full max-w-[1500px] p-4 sm:p-7">{children}</main>
+        <main className="mx-auto w-full max-w-[1600px] p-4 sm:p-6 lg:p-7">{children}</main>
       </div>
     </div>
   );

@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #f5f6f8;
   --foreground: #121417;
@@ -35,6 +37,10 @@ body {
 button,
 a {
   -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  cursor: pointer;
 }
 
 ::selection {
