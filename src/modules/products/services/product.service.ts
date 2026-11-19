@@ -133,13 +133,7 @@ export async function getProducts(options: GetProductsOptions = {}) {
     filter.category = options.category;
   }
 
-  if (options.search?.trim()) {
-    const searchTerm = options.search.trim();
-    filter.$or = [
-      { productCode: searchTerm.toUpperCase() },
-      { $text: { $search: searchTerm } },
-    ];
-  }
+  const searchTerm = options.search?.trim();
 
   if (options.featured !== undefined) filter.isFeatured = options.featured;
 
@@ -157,6 +151,33 @@ export async function getProducts(options: GetProductsOptions = {}) {
     "price-desc": { price: -1 },
     name: { name: 1 },
   } as const;
+
+  // Search the store's exact product code first. MongoDB text search
+  // cannot be combined with this condition inside the same $or query.
+  if (searchTerm) {
+    const exactProduct = await Product.findOne({
+      ...filter,
+      productCode: searchTerm.toUpperCase(),
+    })
+      .populate("category", "name slug")
+      .lean();
+
+    if (exactProduct) {
+      return {
+        items: [exactProduct],
+        pagination: {
+          page,
+          limit,
+          total: 1,
+          totalPages: 1,
+          hasNextPage: false,
+          hasPreviousPage: false,
+        },
+      };
+    }
+
+    filter.$text = { $search: searchTerm };
+  }
 
   const [products, total] = await Promise.all([
     Product.find(filter)
