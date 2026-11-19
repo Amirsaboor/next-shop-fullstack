@@ -64,32 +64,32 @@ export default function AdminShell({ children }: { children: ReactNode }) {
     <div className="admin-theme min-h-screen bg-[#f5f6f8] text-[#17191d] transition-colors dark:bg-[#101216] dark:text-[#f4f5f7]">
       {mobileOpen && <button type="button" aria-label="بستن منو" onClick={() => setMobileOpen(false)} className="fixed inset-0 z-40 bg-black/55 backdrop-blur-[2px] lg:hidden" />}
 
-      <aside className={`fixed inset-y-0 right-0 z-50 flex flex-col border-l border-white/[0.07] bg-[#121417] text-white shadow-2xl shadow-black/10 transition-all duration-300 ${mobileOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"} ${collapsed ? "w-[88px]" : "w-[264px]"}`}>
-        <div className={`flex h-[82px] shrink-0 items-center border-b border-white/[0.08] ${collapsed ? "justify-center px-3" : "justify-between px-5"}`}>
+      <aside className={`fixed inset-y-0 right-0 z-50 flex flex-col border-l border-white/[0.07] bg-[#121417] text-white shadow-2xl shadow-black/10 transition-all duration-300 ${mobileOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"} ${collapsed ? "w-[264px] lg:w-[88px]" : "w-[264px]"}`}>
+        <div className={`flex h-[82px] shrink-0 items-center border-b border-white/[0.08] ${collapsed && !mobileOpen ? "justify-center px-3" : "justify-between px-5"}`}>
           <Link href="/admin" className="flex min-w-0 items-center gap-3" title="Saboor Shop">
             <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] bg-[#ff5a1f] text-xl font-black shadow-lg shadow-[#ff5a1f]/20">S</span>
-            {!collapsed && <span className="min-w-0"><span className="block text-[15px] font-bold tracking-tight">Saboor Shop</span><span className="mt-1 block text-[10px] text-white/45">مدیریت فروشگاه</span></span>}
+            {(!collapsed || mobileOpen) && <span className="min-w-0"><span className="block text-[15px] font-bold tracking-tight">Saboor Shop</span><span className="mt-1 block text-[10px] text-white/45">مدیریت فروشگاه</span></span>}
           </Link>
           <button type="button" onClick={() => setMobileOpen(false)} className="rounded-lg p-2 text-white/55 hover:bg-white/10 lg:hidden" aria-label="بستن منو"><Icon name="close" /></button>
         </div>
 
         <div className="px-3 pt-7">
-          {!collapsed && <p className="mb-3 px-3 text-[10px] font-semibold tracking-widest text-white/35">منوی اصلی</p>}
+          {(!collapsed || mobileOpen) && <p className="mb-3 px-3 text-[10px] font-semibold tracking-widest text-white/35">منوی اصلی</p>}
           <nav className="space-y-1.5">
             {menuItems.map((item) => {
               const active = pathname === item.href;
               return (
                 <div key={item.href} className="relative">
                   {item.soon ? (
-                    <div title={collapsed ? item.label + " - به‌زودی" : "این بخش در مرحله بعد ساخته می‌شود"} className={`flex cursor-not-allowed items-center gap-3 rounded-xl px-3 py-3 text-[13px] text-white/35 ${collapsed ? "justify-center" : ""}`}>
+                    <div title={collapsed ? item.label + " - به‌زودی" : "این بخش در مرحله بعد ساخته می‌شود"} className={`flex cursor-not-allowed items-center gap-3 rounded-xl px-3 py-3 text-[13px] text-white/35 ${collapsed && !mobileOpen ? "justify-center" : ""}`}>
                       <span className="flex h-9 w-9 shrink-0 items-center justify-center"><Icon name={item.icon} size={20} /></span>
-                      {!collapsed && <><span className="flex-1">{item.label}</span><span className="rounded-md bg-white/[0.07] px-2 py-1 text-[9px] text-white/40">به‌زودی</span></>}
+                      {(!collapsed || mobileOpen) && <><span className="flex-1">{item.label}</span><span className="rounded-md bg-white/[0.07] px-2 py-1 text-[9px] text-white/40">به‌زودی</span></>}
                     </div>
                   ) : (
-                    <Link href={item.href} title={collapsed ? item.label : undefined} className={`group flex items-center gap-3 rounded-xl px-3 py-3 text-[13px] transition-all ${collapsed ? "justify-center" : ""} ${active ? "bg-white/[0.11] font-semibold text-white shadow-inner" : "text-white/65 hover:bg-white/[0.06] hover:text-white"}`}>
+                    <Link href={item.href} title={collapsed && !mobileOpen ? item.label : undefined} className={`group flex items-center gap-3 rounded-xl px-3 py-3 text-[13px] transition-all ${collapsed ? "justify-center" : ""} ${active ? "bg-white/[0.11] font-semibold text-white shadow-inner" : "text-white/65 hover:bg-white/[0.06] hover:text-white"}`}>
                       <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] transition ${active ? "bg-[#ff5a1f] text-white shadow-lg shadow-[#ff5a1f]/20" : "text-white/60 group-hover:text-white"}`}><Icon name={item.icon} size={20} /></span>
-                      {!collapsed && <span className="flex-1">{item.label}</span>}
-                      {active && !collapsed && <span className="h-1.5 w-1.5 rounded-full bg-[#ff7a4c]" />}
+                      {(!collapsed || mobileOpen) && <span className="flex-1">{item.label}</span>}
+                      {active && (!collapsed || mobileOpen) && <span className="h-1.5 w-1.5 rounded-full bg-[#ff7a4c]" />}
                     </Link>
                   )}
                 </div>
@@ -103,8 +103,8 @@ export default function AdminShell({ children }: { children: ReactNode }) {
             <span className={`transition-transform ${collapsed ? "rotate-180" : ""}`}><Icon name="chevron" size={17} /></span>
             {!collapsed && <span>جمع کردن منو</span>}
           </button>
-          {!collapsed && <div className="rounded-xl border border-white/10 bg-white/[0.035] p-4"><div className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-emerald-400" /><p className="text-[11px] font-semibold">پنل مدیریت</p></div><p className="mt-2 text-[10px] leading-6 text-white/40">مدیریت محصولات، سفارش‌ها و مشتریان فروشگاه</p></div>}
-          {collapsed && <div className="flex justify-center pb-2"><span className="h-2 w-2 rounded-full bg-emerald-400" title="پنل مدیریت" /></div>}
+          {(!collapsed || mobileOpen) && <div className="rounded-xl border border-white/10 bg-white/[0.035] p-4"><div className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-emerald-400" /><p className="text-[11px] font-semibold">پنل مدیریت</p></div><p className="mt-2 text-[10px] leading-6 text-white/40">مدیریت محصولات، سفارش‌ها و مشتریان فروشگاه</p></div>}
+          {collapsed && !mobileOpen && <div className="flex justify-center pb-2"><span className="h-2 w-2 rounded-full bg-emerald-400" title="پنل مدیریت" /></div>}
         </div>
       </aside>
 
