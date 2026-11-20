@@ -253,7 +253,7 @@ export async function getUserOrderById(userId: string, orderId: string) {
 }
 
 
-const adminOrderStatuses = ['processing', 'shipped', 'delivered', 'cancelled', 'refunded'] as const;
+const adminOrderStatuses = ['processing', 'shipped', 'delivered', 'cancelled'] as const;
 export type AdminOrderStatus = (typeof adminOrderStatuses)[number];
 
 export async function getAdminOrders(options: {
@@ -314,10 +314,6 @@ export async function updateAdminOrderStatus(orderId: string, status: AdminOrder
 
   if (!allowedNextStatuses[order.status]?.includes(status)) {
     throw new AppError('تغییر وضعیت سفارش در این مرحله مجاز نیست', 409);
-  }
-
-  if (status === 'refunded' && order.payment.status !== 'paid') {
-    throw new AppError('فقط سفارش پرداخت‌شده قابل بازپرداخت است', 409);
   }
 
   const updated = await Order.findByIdAndUpdate(
