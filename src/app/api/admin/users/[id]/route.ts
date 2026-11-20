@@ -18,7 +18,7 @@ export async function PATCH(request: Request, { params }: RouteContext) {
       return NextResponse.json({ success: false, message: validation.error.issues[0]?.message ?? 'وضعیت کاربر معتبر نیست' }, { status: 400 });
     }
 
-    const user = await updateUserStatus(id, validation.data.isActive, admin.userId);
+    const user = await updateUserStatus(id, validation.data.isActive, admin.userId, admin.user.role);
     return NextResponse.json({ success: true, data: user });
   } catch (error) {
     return handleApiError(error, 'PATCH /api/admin/users/[id] error:', 'خطا در تغییر وضعیت کاربر');
