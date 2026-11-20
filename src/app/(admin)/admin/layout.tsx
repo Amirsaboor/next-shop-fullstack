@@ -4,6 +4,8 @@ import { redirect } from 'next/navigation';
 import AdminShell from '@/components/admin/AdminShell';
 import { requireAdmin } from '@/lib/auth/require-admin';
 
+export const instant = false;
+
 export default async function AdminLayout({ children }: { children: ReactNode }) {
   try {
     await requireAdmin();
