@@ -7,11 +7,13 @@ import { createCategorySchema } from '@/lib/validations/category.schema';
 import { createCategory, getAllCategories } from '@/modules/categories/services/category.service';
 
 export async function GET(request: Request) {
+  // Access request data before try/catch so Next.js can bail out of prerendering.
+  const { searchParams } = new URL(request.url);
+
   try {
     await requireAdmin();
-    const url = new URL(request.url);
-    const status = url.searchParams.get('status') ?? 'all';
-    const parent = url.searchParams.get('parent');
+    const status = searchParams.get('status') ?? 'all';
+    const parent = searchParams.get('parent');
 
     if (!['all', 'active', 'inactive'].includes(status)) {
       return NextResponse.json({ success: false, message: 'وضعیت دسته‌بندی معتبر نیست' }, { status: 400 });
