@@ -1,12 +1,12 @@
-import "server-only";
+import 'server-only';
 
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
-import { AppError } from "@/lib/errors/app-error";
-import Cart from "@/modules/cart/models/cart.model";
-import Product from "@/modules/products/models/product.model";
-import type { CartOwner } from "@/modules/cart/services/cart-owner.service";
-import type { AddCartItemInput } from "@/lib/validations/cart.schema";
+import { AppError } from '@/lib/errors/app-error';
+import Cart from '@/modules/cart/models/cart.model';
+import Product from '@/modules/products/models/product.model';
+import type { CartOwner } from '@/modules/cart/services/cart-owner.service';
+import type { AddCartItemInput } from '@/lib/validations/cart.schema';
 
 type CartItemDocument = {
   _id: mongoose.Types.ObjectId;
@@ -42,9 +42,7 @@ type CartProduct = {
 };
 
 function ownerFilter(owner: CartOwner) {
-  return "userId" in owner
-    ? { user: owner.userId }
-    : { guestId: owner.guestId };
+  return 'userId' in owner ? { user: owner.userId } : { guestId: owner.guestId };
 }
 
 async function findOrCreateCart(owner: CartOwner) {
@@ -58,12 +56,7 @@ async function findOrCreateCart(owner: CartOwner) {
         items: [],
       });
     } catch (error) {
-      if (
-        typeof error === "object" &&
-        error !== null &&
-        "code" in error &&
-        error.code === 11000
-      ) {
+      if (typeof error === 'object' && error !== null && 'code' in error && error.code === 11000) {
         cart = await Cart.findOne(filter);
       } else {
         throw error;
@@ -71,7 +64,7 @@ async function findOrCreateCart(owner: CartOwner) {
     }
   }
 
-  if (!cart) throw new AppError("ساخت سبد خرید انجام نشد", 500);
+  if (!cart) throw new AppError('ساخت سبد خرید انجام نشد', 500);
   return cart;
 }
 
@@ -81,18 +74,18 @@ async function getProductPricing(productId: string, variantId?: string | null) {
     isActive: true,
   }).lean()) as CartProduct | null;
 
-  if (!product) throw new AppError("محصول پیدا نشد یا غیرفعال است", 404);
+  if (!product) throw new AppError('محصول پیدا نشد یا غیرفعال است', 404);
 
   if (product.hasVariants) {
     if (!variantId) {
-      throw new AppError("لطفاً تنوع موردنظر محصول را انتخاب کنید", 400);
+      throw new AppError('لطفاً تنوع موردنظر محصول را انتخاب کنید', 400);
     }
 
     const variant = product.variants.find(
       (item) => item._id.toString() === variantId && item.isActive,
     );
 
-    if (!variant) throw new AppError("تنوع انتخاب‌شده موجود نیست", 404);
+    if (!variant) throw new AppError('تنوع انتخاب‌شده موجود نیست', 404);
 
     return {
       product,
@@ -103,7 +96,7 @@ async function getProductPricing(productId: string, variantId?: string | null) {
   }
 
   if (variantId) {
-    throw new AppError("این محصول تنوع قابل انتخاب ندارد", 400);
+    throw new AppError('این محصول تنوع قابل انتخاب ندارد', 400);
   }
 
   return {
@@ -119,14 +112,9 @@ export async function getCart(owner: CartOwner) {
   const items = await Promise.all(
     (cart.items as unknown as CartItemDocument[]).map(async (item) => {
       try {
-        const pricing = await getProductPricing(
-          item.product.toString(),
-          item.variantId,
-        );
+        const pricing = await getProductPricing(item.product.toString(), item.variantId);
         const variant = pricing.product.hasVariants
-          ? pricing.product.variants.find(
-              (entry) => entry._id.toString() === item.variantId,
-            )
+          ? pricing.product.variants.find((entry) => entry._id.toString() === item.variantId)
           : null;
 
         return {
@@ -135,7 +123,8 @@ export async function getCart(owner: CartOwner) {
           productCode: pricing.product.productCode,
           name: pricing.product.name,
           slug: pricing.product.slug,
-          image: pricing.product.images.find((image) => image.isPrimary)?.url ??
+          image:
+            pricing.product.images.find((image) => image.isPrimary)?.url ??
             pricing.product.images[0]?.url ??
             null,
           variant: variant
@@ -173,10 +162,7 @@ export async function getCart(owner: CartOwner) {
   );
 
   const availableItems = items.filter((item) => item.isAvailable);
-  const subtotal = availableItems.reduce(
-    (total, item) => total + item.lineTotal,
-    0,
-  );
+  const subtotal = availableItems.reduce((total, item) => total + item.lineTotal, 0);
 
   return {
     items,
@@ -188,13 +174,10 @@ export async function getCart(owner: CartOwner) {
   };
 }
 
-export async function addCartItem(
-  owner: CartOwner,
-  input: AddCartItemInput,
-) {
+export async function addCartItem(owner: CartOwner, input: AddCartItemInput) {
   const pricing = await getProductPricing(input.productId, input.variantId);
   if (pricing.stock < 1) {
-    throw new AppError("این محصول در حال حاضر موجود نیست", 409);
+    throw new AppError('این محصول در حال حاضر موجود نیست', 409);
   }
 
   const cart = await findOrCreateCart(owner);
@@ -207,10 +190,7 @@ export async function addCartItem(
   const nextQuantity = (existingItem?.quantity ?? 0) + input.quantity;
 
   if (nextQuantity > pricing.stock) {
-    throw new AppError(
-      `حداکثر تعداد قابل سفارش از این محصول ${pricing.stock} عدد است`,
-      409,
-    );
+    throw new AppError(`حداکثر تعداد قابل سفارش از این محصول ${pricing.stock} عدد است`, 409);
   }
 
   if (existingItem) {
@@ -227,32 +207,20 @@ export async function addCartItem(
   return getCart(owner);
 }
 
-export async function updateCartItemQuantity(
-  owner: CartOwner,
-  itemId: string,
-  quantity: number,
-) {
+export async function updateCartItemQuantity(owner: CartOwner, itemId: string, quantity: number) {
   if (!mongoose.isObjectIdOrHexString(itemId)) {
-    throw new AppError("شناسه آیتم سبد خرید معتبر نیست", 400);
+    throw new AppError('شناسه آیتم سبد خرید معتبر نیست', 400);
   }
 
   const cart = await findOrCreateCart(owner);
-  const item = cart.items.find(
-    (entry: CartItemDocument) => entry._id.toString() === itemId,
-  );
+  const item = cart.items.find((entry: CartItemDocument) => entry._id.toString() === itemId);
 
-  if (!item) throw new AppError("آیتم موردنظر در سبد خرید پیدا نشد", 404);
+  if (!item) throw new AppError('آیتم موردنظر در سبد خرید پیدا نشد', 404);
 
-  const pricing = await getProductPricing(
-    item.product.toString(),
-    item.variantId,
-  );
+  const pricing = await getProductPricing(item.product.toString(), item.variantId);
 
   if (quantity > pricing.stock) {
-    throw new AppError(
-      `حداکثر تعداد قابل سفارش از این محصول ${pricing.stock} عدد است`,
-      409,
-    );
+    throw new AppError(`حداکثر تعداد قابل سفارش از این محصول ${pricing.stock} عدد است`, 409);
   }
 
   item.quantity = quantity;
@@ -262,15 +230,13 @@ export async function updateCartItemQuantity(
 
 export async function removeCartItem(owner: CartOwner, itemId: string) {
   if (!mongoose.isObjectIdOrHexString(itemId)) {
-    throw new AppError("شناسه آیتم سبد خرید معتبر نیست", 400);
+    throw new AppError('شناسه آیتم سبد خرید معتبر نیست', 400);
   }
 
   const cart = await findOrCreateCart(owner);
-  const item = cart.items.find(
-    (entry: CartItemDocument) => entry._id.toString() === itemId,
-  );
+  const item = cart.items.find((entry: CartItemDocument) => entry._id.toString() === itemId);
 
-  if (!item) throw new AppError("آیتم موردنظر در سبد خرید پیدا نشد", 404);
+  if (!item) throw new AppError('آیتم موردنظر در سبد خرید پیدا نشد', 404);
 
   cart.items.pull({ _id: itemId });
   await cart.save();

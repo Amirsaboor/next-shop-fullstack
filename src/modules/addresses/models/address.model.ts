@@ -1,10 +1,10 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema } from 'mongoose';
 
 const addressSchema = new Schema(
   {
     user: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
       required: true,
       index: true,
     },
@@ -52,13 +52,13 @@ const addressSchema = new Schema(
       type: String,
       trim: true,
       maxlength: 20,
-      default: "",
+      default: '',
     },
     unit: {
       type: String,
       trim: true,
       maxlength: 20,
-      default: "",
+      default: '',
     },
     isDefault: {
       type: Boolean,
@@ -70,7 +70,6 @@ const addressSchema = new Schema(
 
 addressSchema.index({ user: 1, createdAt: -1 });
 
-const Address =
-  mongoose.models.Address || mongoose.model("Address", addressSchema);
+const Address = mongoose.models.Address || mongoose.model('Address', addressSchema);
 
 export default Address;

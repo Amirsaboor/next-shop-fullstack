@@ -1,10 +1,8 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 export const createOrderSchema = z
   .object({
-    addressId: z
-      .string()
-      .regex(/^[a-f\d]{24}$/i, "شناسه آدرس معتبر نیست"),
+    addressId: z.string().regex(/^[a-f\d]{24}$/i, 'شناسه آدرس معتبر نیست'),
     customerNote: z.string().trim().max(500).optional(),
   })
   .strict();

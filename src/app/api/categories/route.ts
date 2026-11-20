@@ -1,13 +1,13 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
 
-import { connectToDatabase } from "@/lib/db/connect";
-import { handleApiError } from "@/lib/api/handle-api-error";
-import { requireAdmin } from "@/lib/auth/require-admin";
-import { createCategorySchema } from "@/lib/validations/category.schema";
+import { connectToDatabase } from '@/lib/db/connect';
+import { handleApiError } from '@/lib/api/handle-api-error';
+import { requireAdmin } from '@/lib/auth/require-admin';
+import { createCategorySchema } from '@/lib/validations/category.schema';
 import {
   createCategory,
   getActiveCategories,
-} from "@/modules/categories/services/category.service";
+} from '@/modules/categories/services/category.service';
 
 export async function GET() {
   try {
@@ -16,7 +16,7 @@ export async function GET() {
 
     return NextResponse.json({ success: true, data: categories });
   } catch (error) {
-    return handleApiError(error, "GET /api/categories error:", "خطا در دریافت دسته‌بندی‌ها");
+    return handleApiError(error, 'GET /api/categories error:', 'خطا در دریافت دسته‌بندی‌ها');
   }
 }
 
@@ -29,7 +29,11 @@ export async function POST(request: Request) {
 
     if (!validation.success) {
       return NextResponse.json(
-        { success: false, message: validation.error.issues[0]?.message ?? "اطلاعات دسته‌بندی معتبر نیست", errors: validation.error.issues },
+        {
+          success: false,
+          message: validation.error.issues[0]?.message ?? 'اطلاعات دسته‌بندی معتبر نیست',
+          errors: validation.error.issues,
+        },
         { status: 400 },
       );
     }
@@ -39,6 +43,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true, data: category }, { status: 201 });
   } catch (error) {
-    return handleApiError(error, "POST /api/categories error:", "خطا در ایجاد دسته‌بندی");
+    return handleApiError(error, 'POST /api/categories error:', 'خطا در ایجاد دسته‌بندی');
   }
 }

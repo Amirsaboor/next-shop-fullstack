@@ -1,11 +1,11 @@
-import { cookies } from "next/headers";
-import { NextResponse } from "next/server";
-import { unstable_rethrow } from "next/navigation";
+import { cookies } from 'next/headers';
+import { NextResponse } from 'next/server';
+import { unstable_rethrow } from 'next/navigation';
 
-import { connectToDatabase } from "@/lib/db/connect";
-import { handleApiError } from "@/lib/api/handle-api-error";
-import { sessionCookie, verifySessionToken } from "@/lib/auth/session";
-import { getPublicUserById } from "@/modules/auth/services/auth.service";
+import { connectToDatabase } from '@/lib/db/connect';
+import { handleApiError } from '@/lib/api/handle-api-error';
+import { sessionCookie, verifySessionToken } from '@/lib/auth/session';
+import { getPublicUserById } from '@/modules/auth/services/auth.service';
 
 export async function GET() {
   try {
@@ -15,7 +15,7 @@ export async function GET() {
 
     if (!token) {
       return NextResponse.json(
-        { success: false, message: "ابتدا وارد حساب کاربری شوید" },
+        { success: false, message: 'ابتدا وارد حساب کاربری شوید' },
         { status: 401 },
       );
     }
@@ -23,7 +23,7 @@ export async function GET() {
     const session = verifySessionToken(token);
     if (!session) {
       return NextResponse.json(
-        { success: false, message: "نشست کاربری معتبر نیست یا منقضی شده است" },
+        { success: false, message: 'نشست کاربری معتبر نیست یا منقضی شده است' },
         { status: 401 },
       );
     }
@@ -35,6 +35,6 @@ export async function GET() {
   } catch (error) {
     // Let Next.js handle its own prerender/request-time control-flow errors.
     unstable_rethrow(error);
-    return handleApiError(error, "GET /api/auth/me error:", "خطا در دریافت اطلاعات کاربر");
+    return handleApiError(error, 'GET /api/auth/me error:', 'خطا در دریافت اطلاعات کاربر');
   }
 }

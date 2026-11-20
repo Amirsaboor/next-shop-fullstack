@@ -1,14 +1,14 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
 
-import { connectToDatabase } from "@/lib/db/connect";
-import { handleApiError } from "@/lib/api/handle-api-error";
-import { requireAdmin } from "@/lib/auth/require-admin";
-import { updateCategorySchema } from "@/lib/validations/category.schema";
+import { connectToDatabase } from '@/lib/db/connect';
+import { handleApiError } from '@/lib/api/handle-api-error';
+import { requireAdmin } from '@/lib/auth/require-admin';
+import { updateCategorySchema } from '@/lib/validations/category.schema';
 import {
   deleteCategory,
   getCategoryById,
   updateCategory,
-} from "@/modules/categories/services/category.service";
+} from '@/modules/categories/services/category.service';
 
 type RouteContext = {
   params: Promise<{ id: string }>;
@@ -21,7 +21,7 @@ export async function GET(_request: Request, { params }: RouteContext) {
     const category = await getCategoryById(id);
     return NextResponse.json({ success: true, data: category });
   } catch (error) {
-    return handleApiError(error, "GET /api/categories/[id] error:", "خطا در دریافت دسته‌بندی");
+    return handleApiError(error, 'GET /api/categories/[id] error:', 'خطا در دریافت دسته‌بندی');
   }
 }
 
@@ -35,7 +35,11 @@ export async function PATCH(request: Request, { params }: RouteContext) {
 
     if (!validation.success) {
       return NextResponse.json(
-        { success: false, message: validation.error.issues[0]?.message ?? "اطلاعات ویرایش دسته‌بندی معتبر نیست", errors: validation.error.issues },
+        {
+          success: false,
+          message: validation.error.issues[0]?.message ?? 'اطلاعات ویرایش دسته‌بندی معتبر نیست',
+          errors: validation.error.issues,
+        },
         { status: 400 },
       );
     }
@@ -44,7 +48,7 @@ export async function PATCH(request: Request, { params }: RouteContext) {
     const category = await updateCategory(id, validation.data);
     return NextResponse.json({ success: true, data: category });
   } catch (error) {
-    return handleApiError(error, "PATCH /api/categories/[id] error:", "خطا در ویرایش دسته‌بندی");
+    return handleApiError(error, 'PATCH /api/categories/[id] error:', 'خطا در ویرایش دسته‌بندی');
   }
 }
 
@@ -58,9 +62,9 @@ export async function DELETE(_request: Request, { params }: RouteContext) {
 
     return NextResponse.json({
       success: true,
-      message: "دسته‌بندی با موفقیت حذف شد",
+      message: 'دسته‌بندی با موفقیت حذف شد',
     });
   } catch (error) {
-    return handleApiError(error, "DELETE /api/categories/[id] error:", "خطا در حذف دسته‌بندی");
+    return handleApiError(error, 'DELETE /api/categories/[id] error:', 'خطا در حذف دسته‌بندی');
   }
 }

@@ -1,14 +1,14 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
 
-import { connectToDatabase } from "@/lib/db/connect";
-import { handleApiError } from "@/lib/api/handle-api-error";
-import { requireAdmin } from "@/lib/auth/require-admin";
-import { updateProductSchema } from "@/lib/validations/product.schema";
+import { connectToDatabase } from '@/lib/db/connect';
+import { handleApiError } from '@/lib/api/handle-api-error';
+import { requireAdmin } from '@/lib/auth/require-admin';
+import { updateProductSchema } from '@/lib/validations/product.schema';
 import {
   archiveProduct,
   getProductById,
   updateProduct,
-} from "@/modules/products/services/product.service";
+} from '@/modules/products/services/product.service';
 
 type RouteContext = {
   params: Promise<{ id: string }>;
@@ -21,7 +21,7 @@ export async function GET(_request: Request, { params }: RouteContext) {
     const product = await getProductById(id);
     return NextResponse.json({ success: true, data: product });
   } catch (error) {
-    return handleApiError(error, "GET /api/products/[id] error:", "خطا در دریافت محصول");
+    return handleApiError(error, 'GET /api/products/[id] error:', 'خطا در دریافت محصول');
   }
 }
 
@@ -35,7 +35,11 @@ export async function PATCH(request: Request, { params }: RouteContext) {
 
     if (!validation.success) {
       return NextResponse.json(
-        { success: false, message: validation.error.issues[0]?.message ?? "اطلاعات ویرایش محصول معتبر نیست", errors: validation.error.issues },
+        {
+          success: false,
+          message: validation.error.issues[0]?.message ?? 'اطلاعات ویرایش محصول معتبر نیست',
+          errors: validation.error.issues,
+        },
         { status: 400 },
       );
     }
@@ -44,7 +48,7 @@ export async function PATCH(request: Request, { params }: RouteContext) {
     const product = await updateProduct(id, validation.data);
     return NextResponse.json({ success: true, data: product });
   } catch (error) {
-    return handleApiError(error, "PATCH /api/products/[id] error:", "خطا در ویرایش محصول");
+    return handleApiError(error, 'PATCH /api/products/[id] error:', 'خطا در ویرایش محصول');
   }
 }
 
@@ -58,9 +62,9 @@ export async function DELETE(_request: Request, { params }: RouteContext) {
 
     return NextResponse.json({
       success: true,
-      message: "محصول با موفقیت از فروشگاه خارج شد",
+      message: 'محصول با موفقیت از فروشگاه خارج شد',
     });
   } catch (error) {
-    return handleApiError(error, "DELETE /api/products/[id] error:", "خطا در حذف محصول");
+    return handleApiError(error, 'DELETE /api/products/[id] error:', 'خطا در حذف محصول');
   }
 }

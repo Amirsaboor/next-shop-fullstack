@@ -1,11 +1,11 @@
-import "server-only";
+import 'server-only';
 
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
-import { AppError } from "@/lib/errors/app-error";
-import Order from "@/modules/orders/models/order.model";
-import Product from "@/modules/products/models/product.model";
-import { getPaymentProvider } from "@/modules/payments/providers/payment-provider";
+import { AppError } from '@/lib/errors/app-error';
+import Order from '@/modules/orders/models/order.model';
+import Product from '@/modules/products/models/product.model';
+import { getPaymentProvider } from '@/modules/payments/providers/payment-provider';
 
 type ConfirmOrderPaymentInput = {
   orderId: string;
@@ -13,12 +13,9 @@ type ConfirmOrderPaymentInput = {
   transactionId: string;
 };
 
-export async function initializeOrderPayment(
-  userId: string,
-  orderId: string,
-) {
+export async function initializeOrderPayment(userId: string, orderId: string) {
   if (!mongoose.isObjectIdOrHexString(orderId)) {
-    throw new AppError("شناسه سفارش معتبر نیست", 400);
+    throw new AppError('شناسه سفارش معتبر نیست', 400);
   }
 
   const order = await Order.findOne({
@@ -27,11 +24,11 @@ export async function initializeOrderPayment(
   }).lean();
 
   if (!order) {
-    throw new AppError("سفارش موردنظر پیدا نشد", 404);
+    throw new AppError('سفارش موردنظر پیدا نشد', 404);
   }
 
-  if (order.status !== "pending_payment" || order.payment.status !== "pending") {
-    throw new AppError("این سفارش در وضعیت قابل پرداخت نیست", 409);
+  if (order.status !== 'pending_payment' || order.payment.status !== 'pending') {
+    throw new AppError('این سفارش در وضعیت قابل پرداخت نیست', 409);
   }
 
   const provider = getPaymentProvider();
@@ -40,26 +37,26 @@ export async function initializeOrderPayment(
     orderNumber: order.orderNumber,
     amount: order.total,
     currency: order.currency,
-    callbackUrl: process.env.PAYMENT_CALLBACK_URL ?? "",
+    callbackUrl: process.env.PAYMENT_CALLBACK_URL ?? '',
   });
 
   const updateResult = await Order.updateOne(
     {
       _id: order._id,
       user: userId,
-      status: "pending_payment",
-      "payment.status": "pending",
+      status: 'pending_payment',
+      'payment.status': 'pending',
     },
     {
       $set: {
-        "payment.provider": provider.name,
-        "payment.transactionId": payment.transactionId,
+        'payment.provider': provider.name,
+        'payment.transactionId': payment.transactionId,
       },
     },
   );
 
   if (updateResult.modifiedCount !== 1) {
-    throw new AppError("وضعیت سفارش تغییر کرده است؛ دوباره تلاش کنید", 409);
+    throw new AppError('وضعیت سفارش تغییر کرده است؛ دوباره تلاش کنید', 409);
   }
 
   return {
@@ -73,15 +70,13 @@ export async function initializeOrderPayment(
  * Call this function only after the payment gateway's server-to-server
  * verification succeeds. Never expose it through an unauthenticated client API.
  */
-export async function confirmOrderPayment(
-  input: ConfirmOrderPaymentInput,
-) {
+export async function confirmOrderPayment(input: ConfirmOrderPaymentInput) {
   if (!mongoose.isObjectIdOrHexString(input.orderId)) {
-    throw new AppError("شناسه سفارش معتبر نیست", 400);
+    throw new AppError('شناسه سفارش معتبر نیست', 400);
   }
 
   if (!input.provider.trim() || !input.transactionId.trim()) {
-    throw new AppError("اطلاعات تراکنش پرداخت معتبر نیست", 400);
+    throw new AppError('اطلاعات تراکنش پرداخت معتبر نیست', 400);
   }
 
   const session = await mongoose.startSession();
@@ -92,20 +87,17 @@ export async function confirmOrderPayment(
       const order = await Order.findById(input.orderId).session(session);
 
       if (!order) {
-        throw new AppError("سفارش موردنظر پیدا نشد", 404);
+        throw new AppError('سفارش موردنظر پیدا نشد', 404);
       }
 
       // Idempotency: repeated verified callbacks never deduct stock twice.
-      if (order.payment.status === "paid") {
+      if (order.payment.status === 'paid') {
         confirmedOrder = order.toObject();
         return;
       }
 
-      if (
-        order.status !== "pending_payment" ||
-        order.payment.status !== "pending"
-      ) {
-        throw new AppError("این سفارش در وضعیت قابل تأیید نیست", 409);
+      if (order.status !== 'pending_payment' || order.payment.status !== 'pending') {
+        throw new AppError('این سفارش در وضعیت قابل تأیید نیست', 409);
       }
 
       for (const item of order.items) {
@@ -115,7 +107,7 @@ export async function confirmOrderPayment(
 
         if (variantId) {
           if (!mongoose.isObjectIdOrHexString(variantId)) {
-            throw new AppError("تنوع یکی از محصولات سفارش معتبر نیست", 409);
+            throw new AppError('تنوع یکی از محصولات سفارش معتبر نیست', 409);
           }
 
           const variantObjectId = new mongoose.Types.ObjectId(variantId);
@@ -133,15 +125,15 @@ export async function confirmOrderPayment(
               },
             },
             {
-              $inc: { "variants.$[variant].stock": -quantity },
+              $inc: { 'variants.$[variant].stock': -quantity },
             },
             {
               session,
               arrayFilters: [
                 {
-                  "variant._id": variantObjectId,
-                  "variant.isActive": true,
-                  "variant.stock": { $gte: quantity },
+                  'variant._id': variantObjectId,
+                  'variant.isActive': true,
+                  'variant.stock': { $gte: quantity },
                 },
               ],
             },
@@ -170,23 +162,23 @@ export async function confirmOrderPayment(
       const updatedOrder = await Order.findOneAndUpdate(
         {
           _id: order._id,
-          status: "pending_payment",
-          "payment.status": "pending",
+          status: 'pending_payment',
+          'payment.status': 'pending',
         },
         {
           $set: {
-            status: "processing",
-            "payment.status": "paid",
-            "payment.provider": input.provider,
-            "payment.transactionId": input.transactionId,
-            "payment.paidAt": new Date(),
+            status: 'processing',
+            'payment.status': 'paid',
+            'payment.provider': input.provider,
+            'payment.transactionId': input.transactionId,
+            'payment.paidAt': new Date(),
           },
         },
         { new: true, session },
       );
 
       if (!updatedOrder) {
-        throw new AppError("تغییر وضعیت پرداخت سفارش انجام نشد", 409);
+        throw new AppError('تغییر وضعیت پرداخت سفارش انجام نشد', 409);
       }
 
       confirmedOrder = updatedOrder.toObject();
@@ -196,7 +188,7 @@ export async function confirmOrderPayment(
   }
 
   if (!confirmedOrder) {
-    throw new AppError("تأیید پرداخت سفارش انجام نشد", 500);
+    throw new AppError('تأیید پرداخت سفارش انجام نشد', 500);
   }
 
   return confirmedOrder;

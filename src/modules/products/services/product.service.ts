@@ -1,9 +1,9 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
-import { AppError } from "@/lib/errors/app-error";
-import Category from "@/modules/categories/models/category.model";
+import { AppError } from '@/lib/errors/app-error';
+import Category from '@/modules/categories/models/category.model';
 
-import Product from "../models/product.model";
+import Product from '../models/product.model';
 
 export type ProductImageInput = {
   url: string;
@@ -57,19 +57,19 @@ export type GetProductsOptions = {
   search?: string;
   minPrice?: number;
   maxPrice?: number;
-  sort?: "newest" | "oldest" | "price-asc" | "price-desc" | "name";
+  sort?: 'newest' | 'oldest' | 'price-asc' | 'price-desc' | 'name';
   featured?: boolean;
 };
 
 function validateProductId(id: string) {
   if (!mongoose.isObjectIdOrHexString(id)) {
-    throw new AppError("شناسه محصول معتبر نیست", 400);
+    throw new AppError('شناسه محصول معتبر نیست', 400);
   }
 }
 
 async function validateCategory(categoryId: string) {
   if (!mongoose.isObjectIdOrHexString(categoryId)) {
-    throw new AppError("شناسه دسته‌بندی معتبر نیست", 400);
+    throw new AppError('شناسه دسته‌بندی معتبر نیست', 400);
   }
 
   const categoryExists = await Category.exists({
@@ -78,13 +78,13 @@ async function validateCategory(categoryId: string) {
   });
 
   if (!categoryExists) {
-    throw new AppError("دسته‌بندی محصول پیدا نشد یا غیرفعال است", 404);
+    throw new AppError('دسته‌بندی محصول پیدا نشد یا غیرفعال است', 404);
   }
 }
 
 function validateProductPrices(price: number, compareAtPrice?: number | null) {
   if (!Number.isFinite(price) || price < 0) {
-    throw new AppError("قیمت محصول معتبر نیست", 400);
+    throw new AppError('قیمت محصول معتبر نیست', 400);
   }
 
   if (
@@ -92,31 +92,28 @@ function validateProductPrices(price: number, compareAtPrice?: number | null) {
     compareAtPrice !== null &&
     (!Number.isFinite(compareAtPrice) || compareAtPrice < price)
   ) {
-    throw new AppError("قیمت قبل از تخفیف نمی‌تواند کمتر از قیمت فروش باشد", 400);
+    throw new AppError('قیمت قبل از تخفیف نمی‌تواند کمتر از قیمت فروش باشد', 400);
   }
 }
 
-function validateVariants(
-  hasVariants: boolean,
-  variants: ProductVariantInput[],
-) {
+function validateVariants(hasVariants: boolean, variants: ProductVariantInput[]) {
   if (hasVariants && variants.length === 0) {
-    throw new AppError("برای محصول دارای تنوع، حداقل یک تنوع ثبت کنید", 400);
+    throw new AppError('برای محصول دارای تنوع، حداقل یک تنوع ثبت کنید', 400);
   }
 
   if (!hasVariants && variants.length > 0) {
-    throw new AppError("برای ثبت تنوع‌ها، hasVariants باید فعال باشد", 400);
+    throw new AppError('برای ثبت تنوع‌ها، hasVariants باید فعال باشد', 400);
   }
 
   const skus = variants.map((variant) => variant.sku.trim().toUpperCase());
   if (new Set(skus).size !== skus.length) {
-    throw new AppError("کد SKU تنوع‌های یک محصول باید یکتا باشد", 400);
+    throw new AppError('کد SKU تنوع‌های یک محصول باید یکتا باشد', 400);
   }
 
   for (const variant of variants) {
     validateProductPrices(variant.price, variant.compareAtPrice);
     if (!Number.isInteger(variant.stock) || variant.stock < 0) {
-      throw new AppError("موجودی هر تنوع باید عدد صحیح نامنفی باشد", 400);
+      throw new AppError('موجودی هر تنوع باید عدد صحیح نامنفی باشد', 400);
     }
   }
 }
@@ -128,7 +125,7 @@ export async function getProducts(options: GetProductsOptions = {}) {
 
   if (options.category) {
     if (!mongoose.isObjectIdOrHexString(options.category)) {
-      throw new AppError("شناسه دسته‌بندی معتبر نیست", 400);
+      throw new AppError('شناسه دسته‌بندی معتبر نیست', 400);
     }
     filter.category = options.category;
   }
@@ -147,8 +144,8 @@ export async function getProducts(options: GetProductsOptions = {}) {
   const sortOptions = {
     newest: { createdAt: -1 },
     oldest: { createdAt: 1 },
-    "price-asc": { price: 1 },
-    "price-desc": { price: -1 },
+    'price-asc': { price: 1 },
+    'price-desc': { price: -1 },
     name: { name: 1 },
   } as const;
 
@@ -157,23 +154,21 @@ export async function getProducts(options: GetProductsOptions = {}) {
   if (searchTerm) {
     const normalizedSearch = searchTerm.toUpperCase();
     const escapedSearch = normalizedSearch
-      .split("")
-      .map((character) =>
-        ".*+?^${}()|[]\\".includes(character) ? "\\" + character : character,
-      )
-      .join("");
+      .split('')
+      .map((character) => ('.*+?^${}()|[]\\'.includes(character) ? '\\' + character : character))
+      .join('');
 
     const productCodeFilter = {
       ...filter,
-      productCode: { $regex: "^" + escapedSearch },
+      productCode: { $regex: '^' + escapedSearch },
     };
 
     const [matchingCodeProducts, matchingCodeTotal] = await Promise.all([
       Product.find(productCodeFilter)
-        .sort(sortOptions[options.sort ?? "newest"])
+        .sort(sortOptions[options.sort ?? 'newest'])
         .skip((page - 1) * limit)
         .limit(limit)
-        .populate("category", "name slug")
+        .populate('category', 'name slug')
         .lean(),
       Product.countDocuments(productCodeFilter),
     ]);
@@ -197,10 +192,10 @@ export async function getProducts(options: GetProductsOptions = {}) {
 
   const [products, total] = await Promise.all([
     Product.find(filter)
-      .sort(sortOptions[options.sort ?? "newest"])
+      .sort(sortOptions[options.sort ?? 'newest'])
       .skip((page - 1) * limit)
       .limit(limit)
-      .populate("category", "name slug")
+      .populate('category', 'name slug')
       .lean(),
     Product.countDocuments(filter),
   ]);
@@ -222,10 +217,10 @@ export async function getProductById(id: string) {
   validateProductId(id);
 
   const product = await Product.findOne({ _id: id, isActive: true })
-    .populate("category", "name slug")
+    .populate('category', 'name slug')
     .lean();
 
-  if (!product) throw new AppError("محصول پیدا نشد", 404);
+  if (!product) throw new AppError('محصول پیدا نشد', 404);
   return product;
 }
 
@@ -238,7 +233,7 @@ export async function createProduct(input: CreateProductInput) {
   validateVariants(hasVariants, variants);
 
   if (!hasVariants && (!Number.isInteger(input.stock ?? 0) || (input.stock ?? 0) < 0)) {
-    throw new AppError("موجودی محصول باید عدد صحیح نامنفی باشد", 400);
+    throw new AppError('موجودی محصول باید عدد صحیح نامنفی باشد', 400);
   }
 
   const product = await Product.create({
@@ -247,7 +242,7 @@ export async function createProduct(input: CreateProductInput) {
     hasVariants,
     variants,
     slug: input.slug.toLowerCase(),
-    brand: input.brand?.trim() ?? "",
+    brand: input.brand?.trim() ?? '',
     tags: input.tags?.map((tag) => tag.trim()).filter(Boolean) ?? [],
   });
 
@@ -258,29 +253,24 @@ export async function updateProduct(id: string, input: UpdateProductInput) {
   validateProductId(id);
 
   const existingProduct = await Product.findById(id)
-    .select("price compareAtPrice hasVariants variants")
+    .select('price compareAtPrice hasVariants variants')
     .lean();
 
-  if (!existingProduct) throw new AppError("محصول پیدا نشد", 404);
+  if (!existingProduct) throw new AppError('محصول پیدا نشد', 404);
 
   if (input.category) await validateCategory(input.category);
 
   const nextPrice = input.price ?? existingProduct.price;
   const nextCompareAtPrice =
-    input.compareAtPrice !== undefined
-      ? input.compareAtPrice
-      : existingProduct.compareAtPrice;
+    input.compareAtPrice !== undefined ? input.compareAtPrice : existingProduct.compareAtPrice;
   validateProductPrices(nextPrice, nextCompareAtPrice);
 
   const nextHasVariants = input.hasVariants ?? existingProduct.hasVariants;
   const nextVariants = input.variants ?? existingProduct.variants;
   validateVariants(nextHasVariants, nextVariants as ProductVariantInput[]);
 
-  if (
-    input.stock !== undefined &&
-    (!Number.isInteger(input.stock) || input.stock < 0)
-  ) {
-    throw new AppError("موجودی محصول باید عدد صحیح نامنفی باشد", 400);
+  if (input.stock !== undefined && (!Number.isInteger(input.stock) || input.stock < 0)) {
+    throw new AppError('موجودی محصول باید عدد صحیح نامنفی باشد', 400);
   }
 
   const updateData = {
@@ -296,21 +286,17 @@ export async function updateProduct(id: string, input: UpdateProductInput) {
     { new: true, runValidators: true },
   ).lean();
 
-  if (!product) throw new AppError("محصول پیدا نشد", 404);
+  if (!product) throw new AppError('محصول پیدا نشد', 404);
   return product;
 }
 
 export async function archiveProduct(id: string) {
   validateProductId(id);
 
-  const product = await Product.findByIdAndUpdate(
-    id,
-    { $set: { isActive: false } },
-    { new: true },
-  )
-    .select("_id isActive")
+  const product = await Product.findByIdAndUpdate(id, { $set: { isActive: false } }, { new: true })
+    .select('_id isActive')
     .lean();
 
-  if (!product) throw new AppError("محصول پیدا نشد", 404);
+  if (!product) throw new AppError('محصول پیدا نشد', 404);
   return product;
 }

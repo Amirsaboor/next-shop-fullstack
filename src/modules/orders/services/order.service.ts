@@ -1,14 +1,14 @@
-import "server-only";
+import 'server-only';
 
-import { randomBytes } from "node:crypto";
-import mongoose from "mongoose";
+import { randomBytes } from 'node:crypto';
+import mongoose from 'mongoose';
 
-import { AppError } from "@/lib/errors/app-error";
-import Address from "@/modules/addresses/models/address.model";
-import Cart from "@/modules/cart/models/cart.model";
-import Order from "@/modules/orders/models/order.model";
-import Product from "@/modules/products/models/product.model";
-import type { CreateOrderInput } from "@/lib/validations/order.schema";
+import { AppError } from '@/lib/errors/app-error';
+import Address from '@/modules/addresses/models/address.model';
+import Cart from '@/modules/cart/models/cart.model';
+import Order from '@/modules/orders/models/order.model';
+import Product from '@/modules/products/models/product.model';
+import type { CreateOrderInput } from '@/lib/validations/order.schema';
 
 type OrderProductImage = { url: string; isPrimary: boolean };
 
@@ -40,17 +40,14 @@ function createOrderNumber() {
   const date = new Date();
   const datePart = [
     date.getFullYear(),
-    String(date.getMonth() + 1).padStart(2, "0"),
-    String(date.getDate()).padStart(2, "0"),
-  ].join("");
+    String(date.getMonth() + 1).padStart(2, '0'),
+    String(date.getDate()).padStart(2, '0'),
+  ].join('');
 
-  return `ORD-${datePart}-${randomBytes(3).toString("hex").toUpperCase()}`;
+  return `ORD-${datePart}-${randomBytes(3).toString('hex').toUpperCase()}`;
 }
 
-export async function createOrder(
-  userId: string,
-  input: CreateOrderInput,
-) {
+export async function createOrder(userId: string, input: CreateOrderInput) {
   const session = await mongoose.startSession();
   const orderNumber = createOrderNumber();
   let createdOrderId: mongoose.Types.ObjectId | null = null;
@@ -66,11 +63,11 @@ export async function createOrder(
       ]);
 
       if (!address) {
-        throw new AppError("آدرس انتخاب‌شده پیدا نشد", 404);
+        throw new AppError('آدرس انتخاب‌شده پیدا نشد', 404);
       }
 
       if (!cart || cart.items.length === 0) {
-        throw new AppError("سبد خرید شما خالی است", 400);
+        throw new AppError('سبد خرید شما خالی است', 400);
       }
 
       const orderItems = [];
@@ -85,7 +82,7 @@ export async function createOrder(
 
         if (!product) {
           throw new AppError(
-            "یکی از محصولات سبد خرید دیگر قابل سفارش نیست؛ سبد را بررسی کنید",
+            'یکی از محصولات سبد خرید دیگر قابل سفارش نیست؛ سبد را بررسی کنید',
             409,
           );
         }
@@ -109,15 +106,11 @@ export async function createOrder(
           }
 
           const variant = product.variants.find(
-            (entry) =>
-              entry._id.toString() === cartItem.variantId && entry.isActive,
+            (entry) => entry._id.toString() === cartItem.variantId && entry.isActive,
           );
 
           if (!variant) {
-            throw new AppError(
-              `تنوع انتخاب‌شده برای محصول «${product.name}» موجود نیست`,
-              409,
-            );
+            throw new AppError(`تنوع انتخاب‌شده برای محصول «${product.name}» موجود نیست`, 409);
           }
 
           unitPrice = variant.price;
@@ -133,10 +126,7 @@ export async function createOrder(
             })),
           };
         } else if (cartItem.variantId) {
-          throw new AppError(
-            `تنوع انتخاب‌شده برای محصول «${product.name}» معتبر نیست`,
-            409,
-          );
+          throw new AppError(`تنوع انتخاب‌شده برای محصول «${product.name}» معتبر نیست`, 409);
         }
 
         if (availableStock < cartItem.quantity) {
@@ -152,9 +142,7 @@ export async function createOrder(
           name: product.name,
           slug: product.slug,
           image:
-            product.images.find((image) => image.isPrimary)?.url ??
-            product.images[0]?.url ??
-            null,
+            product.images.find((image) => image.isPrimary)?.url ?? product.images[0]?.url ?? null,
           variant: variantSnapshot,
           quantity: cartItem.quantity,
           unitPrice,
@@ -163,10 +151,7 @@ export async function createOrder(
         });
       }
 
-      const subtotal = orderItems.reduce(
-        (total, item) => total + item.lineTotal,
-        0,
-      );
+      const subtotal = orderItems.reduce((total, item) => total + item.lineTotal, 0);
       const shippingCost = 0;
       const discount = 0;
       const total = subtotal + shippingCost - discount;
@@ -192,13 +177,13 @@ export async function createOrder(
             shippingCost,
             discount,
             total,
-            currency: "TOMAN",
-            status: "pending_payment",
+            currency: 'TOMAN',
+            status: 'pending_payment',
             payment: {
-              provider: "unconfigured",
-              status: "pending",
+              provider: 'unconfigured',
+              status: 'pending',
             },
-            customerNote: input.customerNote ?? "",
+            customerNote: input.customerNote ?? '',
           },
         ],
         { session },
@@ -213,7 +198,7 @@ export async function createOrder(
   }
 
   if (!createdOrderId) {
-    throw new AppError("ثبت سفارش انجام نشد", 500);
+    throw new AppError('ثبت سفارش انجام نشد', 500);
   }
 
   const order = await Order.findOne({
@@ -221,16 +206,12 @@ export async function createOrder(
     user: userId,
   }).lean();
 
-  if (!order) throw new AppError("سفارش ثبت شد اما دریافت آن ممکن نبود", 500);
+  if (!order) throw new AppError('سفارش ثبت شد اما دریافت آن ممکن نبود', 500);
 
   return order;
 }
 
-export async function getUserOrders(
-  userId: string,
-  page = 1,
-  limit = 10,
-) {
+export async function getUserOrders(userId: string, page = 1, limit = 10) {
   const safePage = Math.max(1, Math.floor(page));
   const safeLimit = Math.min(50, Math.max(1, Math.floor(limit)));
 
@@ -256,12 +237,9 @@ export async function getUserOrders(
   };
 }
 
-export async function getUserOrderById(
-  userId: string,
-  orderId: string,
-) {
+export async function getUserOrderById(userId: string, orderId: string) {
   if (!mongoose.isObjectIdOrHexString(orderId)) {
-    throw new AppError("شناسه سفارش معتبر نیست", 400);
+    throw new AppError('شناسه سفارش معتبر نیست', 400);
   }
 
   const order = await Order.findOne({
@@ -269,7 +247,7 @@ export async function getUserOrderById(
     user: userId,
   }).lean();
 
-  if (!order) throw new AppError("سفارش موردنظر پیدا نشد", 404);
+  if (!order) throw new AppError('سفارش موردنظر پیدا نشد', 404);
 
   return order;
 }

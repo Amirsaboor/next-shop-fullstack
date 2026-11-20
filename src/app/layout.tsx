@@ -1,29 +1,33 @@
-import type { Metadata } from "next";
-import { Geist_Mono, Vazirmatn } from "next/font/google";
-import "./globals.css";
+import type { Metadata } from 'next';
+import { Geist_Mono, Vazirmatn } from 'next/font/google';
+import './globals.css';
 
 const vazirmatn = Vazirmatn({
-  variable: "--font-vazirmatn",
-  subsets: ["arabic", "latin"],
-  display: "swap",
+  variable: '--font-vazirmatn',
+  subsets: ['arabic', 'latin'],
+  display: 'swap',
 });
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  variable: '--font-geist-mono',
+  subsets: ['latin'],
 });
 
 export const metadata: Metadata = {
   title: {
-    default: "فروشگاه",
-    template: "%s | فروشگاه",
+    default: 'فروشگاه',
+    template: '%s | فروشگاه',
   },
-  description: "فروشگاه آنلاین محصولات دیجیتال و گجت",
+  description: 'فروشگاه آنلاین محصولات دیجیتال و گجت',
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
-    <html lang="fa" dir="rtl" className={`${vazirmatn.variable} ${geistMono.variable} h-full antialiased`}>
+    <html
+      lang="fa"
+      dir="rtl"
+      className={`${vazirmatn.variable} ${geistMono.variable} h-full antialiased`}
+    >
       <body className="min-h-full">{children}</body>
     </html>
   );

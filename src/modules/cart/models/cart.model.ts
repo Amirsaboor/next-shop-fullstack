@@ -1,10 +1,10 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema } from 'mongoose';
 
 const cartItemSchema = new Schema(
   {
     product: {
       type: Schema.Types.ObjectId,
-      ref: "Product",
+      ref: 'Product',
       required: true,
     },
     variantId: {
@@ -25,7 +25,7 @@ const cartSchema = new Schema(
   {
     user: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
       default: undefined,
     },
     guestId: {
@@ -44,7 +44,7 @@ cartSchema.index(
   { user: 1 },
   {
     unique: true,
-    partialFilterExpression: { user: { $type: "objectId" } },
+    partialFilterExpression: { user: { $type: 'objectId' } },
   },
 );
 
@@ -52,10 +52,10 @@ cartSchema.index(
   { guestId: 1 },
   {
     unique: true,
-    partialFilterExpression: { guestId: { $type: "string" } },
+    partialFilterExpression: { guestId: { $type: 'string' } },
   },
 );
 
-const Cart = mongoose.models.Cart || mongoose.model("Cart", cartSchema);
+const Cart = mongoose.models.Cart || mongoose.model('Cart', cartSchema);
 
 export default Cart;

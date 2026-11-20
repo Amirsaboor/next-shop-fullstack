@@ -1,10 +1,10 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
 
-import { connectToDatabase } from "@/lib/db/connect";
-import { handleApiError } from "@/lib/api/handle-api-error";
-import { requireUser } from "@/lib/auth/require-user";
-import { initializePaymentSchema } from "@/lib/validations/payment.schema";
-import { initializeOrderPayment } from "@/modules/payments/services/payment.service";
+import { connectToDatabase } from '@/lib/db/connect';
+import { handleApiError } from '@/lib/api/handle-api-error';
+import { requireUser } from '@/lib/auth/require-user';
+import { initializePaymentSchema } from '@/lib/validations/payment.schema';
+import { initializeOrderPayment } from '@/modules/payments/services/payment.service';
 
 export async function POST(request: Request) {
   try {
@@ -18,29 +18,20 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           success: false,
-          message:
-            validation.error.issues[0]?.message ??
-            "اطلاعات شروع پرداخت معتبر نیست",
+          message: validation.error.issues[0]?.message ?? 'اطلاعات شروع پرداخت معتبر نیست',
         },
         { status: 400 },
       );
     }
 
-    const payment = await initializeOrderPayment(
-      userId,
-      validation.data.orderId,
-    );
+    const payment = await initializeOrderPayment(userId, validation.data.orderId);
 
     return NextResponse.json({
       success: true,
-      message: "درخواست پرداخت با موفقیت ایجاد شد",
+      message: 'درخواست پرداخت با موفقیت ایجاد شد',
       data: payment,
     });
   } catch (error) {
-    return handleApiError(
-      error,
-      "POST /api/payments/initialize error:",
-      "خطا در شروع پرداخت",
-    );
+    return handleApiError(error, 'POST /api/payments/initialize error:', 'خطا در شروع پرداخت');
   }
 }

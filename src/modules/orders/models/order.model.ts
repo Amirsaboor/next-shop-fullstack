@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema } from 'mongoose';
 
 const orderVariantAttributeSchema = new Schema(
   {
@@ -12,7 +12,7 @@ const orderItemSchema = new Schema(
   {
     product: {
       type: Schema.Types.ObjectId,
-      ref: "Product",
+      ref: 'Product',
       required: true,
     },
     productCode: { type: String, required: true },
@@ -42,8 +42,8 @@ const shippingAddressSchema = new Schema(
     city: { type: String, required: true },
     postalCode: { type: String, required: true },
     address: { type: String, required: true },
-    plaque: { type: String, default: "" },
-    unit: { type: String, default: "" },
+    plaque: { type: String, default: '' },
+    unit: { type: String, default: '' },
   },
   { _id: false },
 );
@@ -52,17 +52,17 @@ const paymentSchema = new Schema(
   {
     provider: {
       type: String,
-      default: "unconfigured",
+      default: 'unconfigured',
       required: true,
       trim: true,
     },
     status: {
       type: String,
-      enum: ["pending", "paid", "failed", "cancelled", "refunded"],
-      default: "pending",
+      enum: ['pending', 'paid', 'failed', 'cancelled', 'refunded'],
+      default: 'pending',
       required: true,
     },
-    transactionId: { type: String, default: "" },
+    transactionId: { type: String, default: '' },
     paidAt: { type: Date, default: null },
   },
   { _id: false },
@@ -72,7 +72,7 @@ const orderSchema = new Schema(
   {
     user: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
       required: true,
       index: true,
     },
@@ -87,7 +87,7 @@ const orderSchema = new Schema(
       required: true,
       validate: {
         validator: (items: unknown[]) => items.length > 0,
-        message: "سفارش باید حداقل یک محصول داشته باشد",
+        message: 'سفارش باید حداقل یک محصول داشته باشد',
       },
     },
     shippingAddress: {
@@ -98,26 +98,26 @@ const orderSchema = new Schema(
     shippingCost: { type: Number, default: 0, min: 0 },
     discount: { type: Number, default: 0, min: 0 },
     total: { type: Number, required: true, min: 0 },
-    currency: { type: String, default: "TOMAN", required: true },
+    currency: { type: String, default: 'TOMAN', required: true },
     status: {
       type: String,
       enum: [
-        "pending_payment",
-        "paid",
-        "processing",
-        "shipped",
-        "delivered",
-        "cancelled",
-        "refunded",
+        'pending_payment',
+        'paid',
+        'processing',
+        'shipped',
+        'delivered',
+        'cancelled',
+        'refunded',
       ],
-      default: "pending_payment",
+      default: 'pending_payment',
       required: true,
     },
     payment: {
       type: paymentSchema,
       default: () => ({}),
     },
-    customerNote: { type: String, default: "", maxlength: 500 },
+    customerNote: { type: String, default: '', maxlength: 500 },
   },
   { timestamps: true },
 );
@@ -125,6 +125,6 @@ const orderSchema = new Schema(
 orderSchema.index({ user: 1, createdAt: -1 });
 orderSchema.index({ status: 1, createdAt: -1 });
 
-const Order = mongoose.models.Order || mongoose.model("Order", orderSchema);
+const Order = mongoose.models.Order || mongoose.model('Order', orderSchema);
 
 export default Order;

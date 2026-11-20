@@ -1,21 +1,15 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
 
-import { handleApiError } from "@/lib/api/handle-api-error";
-import { updateCartItemSchema } from "@/lib/validations/cart.schema";
-import { getCartOwner } from "@/modules/cart/services/cart-owner.service";
-import {
-  removeCartItem,
-  updateCartItemQuantity,
-} from "@/modules/cart/services/cart.service";
+import { handleApiError } from '@/lib/api/handle-api-error';
+import { updateCartItemSchema } from '@/lib/validations/cart.schema';
+import { getCartOwner } from '@/modules/cart/services/cart-owner.service';
+import { removeCartItem, updateCartItemQuantity } from '@/modules/cart/services/cart.service';
 
 type RouteContext = {
   params: Promise<{ itemId: string }>;
 };
 
-export async function PATCH(
-  request: Request,
-  { params }: RouteContext,
-) {
+export async function PATCH(request: Request, { params }: RouteContext) {
   try {
     const owner = await getCartOwner();
     const { itemId } = await params;
@@ -26,39 +20,30 @@ export async function PATCH(
       return NextResponse.json(
         {
           success: false,
-          message:
-            validation.error.issues[0]?.message ??
-            "تعداد واردشده معتبر نیست",
+          message: validation.error.issues[0]?.message ?? 'تعداد واردشده معتبر نیست',
           errors: validation.error.issues,
         },
         { status: 400 },
       );
     }
 
-    const cart = await updateCartItemQuantity(
-      owner,
-      itemId,
-      validation.data.quantity,
-    );
+    const cart = await updateCartItemQuantity(owner, itemId, validation.data.quantity);
 
     return NextResponse.json({
       success: true,
-      message: "تعداد محصول به‌روزرسانی شد",
+      message: 'تعداد محصول به‌روزرسانی شد',
       data: cart,
     });
   } catch (error) {
     return handleApiError(
       error,
-      "PATCH /api/cart/items/[itemId] error:",
-      "خطا در به‌روزرسانی سبد خرید",
+      'PATCH /api/cart/items/[itemId] error:',
+      'خطا در به‌روزرسانی سبد خرید',
     );
   }
 }
 
-export async function DELETE(
-  _request: Request,
-  { params }: RouteContext,
-) {
+export async function DELETE(_request: Request, { params }: RouteContext) {
   try {
     const owner = await getCartOwner();
     const { itemId } = await params;
@@ -66,14 +51,14 @@ export async function DELETE(
 
     return NextResponse.json({
       success: true,
-      message: "محصول از سبد خرید حذف شد",
+      message: 'محصول از سبد خرید حذف شد',
       data: cart,
     });
   } catch (error) {
     return handleApiError(
       error,
-      "DELETE /api/cart/items/[itemId] error:",
-      "خطا در حذف محصول از سبد خرید",
+      'DELETE /api/cart/items/[itemId] error:',
+      'خطا در حذف محصول از سبد خرید',
     );
   }
 }

@@ -1,21 +1,12 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
 
-import { AppError } from "@/lib/errors/app-error";
+import { AppError } from '@/lib/errors/app-error';
 
 function isDuplicateKeyError(error: unknown): boolean {
-  return (
-    typeof error === "object" &&
-    error !== null &&
-    "code" in error &&
-    error.code === 11000
-  );
+  return typeof error === 'object' && error !== null && 'code' in error && error.code === 11000;
 }
 
-export function handleApiError(
-  error: unknown,
-  context: string,
-  fallbackMessage: string,
-) {
+export function handleApiError(error: unknown, context: string, fallbackMessage: string) {
   console.error(context, error);
 
   if (error instanceof AppError) {
@@ -32,7 +23,7 @@ export function handleApiError(
     return NextResponse.json(
       {
         success: false,
-        message: "فرمت JSON درخواست نامعتبر است",
+        message: 'فرمت JSON درخواست نامعتبر است',
       },
       { status: 400 },
     );
@@ -42,20 +33,17 @@ export function handleApiError(
     return NextResponse.json(
       {
         success: false,
-        message: "این مقدار قبلاً ثبت شده است",
+        message: 'این مقدار قبلاً ثبت شده است',
       },
       { status: 409 },
     );
   }
 
-  if (
-    error instanceof Error &&
-    (error.name === "ValidationError" || error.name === "CastError")
-  ) {
+  if (error instanceof Error && (error.name === 'ValidationError' || error.name === 'CastError')) {
     return NextResponse.json(
       {
         success: false,
-        message: "اطلاعات ارسالی معتبر نیست",
+        message: 'اطلاعات ارسالی معتبر نیست',
       },
       { status: 400 },
     );

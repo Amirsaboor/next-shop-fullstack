@@ -1,9 +1,9 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
 
-import { handleApiError } from "@/lib/api/handle-api-error";
-import { addCartItemSchema } from "@/lib/validations/cart.schema";
-import { getCartOwner } from "@/modules/cart/services/cart-owner.service";
-import { addCartItem } from "@/modules/cart/services/cart.service";
+import { handleApiError } from '@/lib/api/handle-api-error';
+import { addCartItemSchema } from '@/lib/validations/cart.schema';
+import { getCartOwner } from '@/modules/cart/services/cart-owner.service';
+import { addCartItem } from '@/modules/cart/services/cart.service';
 
 export async function POST(request: Request) {
   try {
@@ -15,9 +15,7 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           success: false,
-          message:
-            validation.error.issues[0]?.message ??
-            "اطلاعات محصول معتبر نیست",
+          message: validation.error.issues[0]?.message ?? 'اطلاعات محصول معتبر نیست',
           errors: validation.error.issues,
         },
         { status: 400 },
@@ -29,16 +27,12 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         success: true,
-        message: "محصول به سبد خرید اضافه شد",
+        message: 'محصول به سبد خرید اضافه شد',
         data: cart,
       },
       { status: 200 },
     );
   } catch (error) {
-    return handleApiError(
-      error,
-      "POST /api/cart/items error:",
-      "خطا در افزودن محصول به سبد خرید",
-    );
+    return handleApiError(error, 'POST /api/cart/items error:', 'خطا در افزودن محصول به سبد خرید');
   }
 }

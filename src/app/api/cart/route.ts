@@ -1,8 +1,8 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
 
-import { handleApiError } from "@/lib/api/handle-api-error";
-import { getCartOwner } from "@/modules/cart/services/cart-owner.service";
-import { clearCart, getCart } from "@/modules/cart/services/cart.service";
+import { handleApiError } from '@/lib/api/handle-api-error';
+import { getCartOwner } from '@/modules/cart/services/cart-owner.service';
+import { clearCart, getCart } from '@/modules/cart/services/cart.service';
 
 export async function GET() {
   try {
@@ -14,11 +14,7 @@ export async function GET() {
       data: cart,
     });
   } catch (error) {
-    return handleApiError(
-      error,
-      "GET /api/cart error:",
-      "خطا در دریافت سبد خرید",
-    );
+    return handleApiError(error, 'GET /api/cart error:', 'خطا در دریافت سبد خرید');
   }
 }
 
@@ -29,14 +25,10 @@ export async function DELETE() {
 
     return NextResponse.json({
       success: true,
-      message: "سبد خرید خالی شد",
+      message: 'سبد خرید خالی شد',
       data: cart,
     });
   } catch (error) {
-    return handleApiError(
-      error,
-      "DELETE /api/cart error:",
-      "خطا در خالی کردن سبد خرید",
-    );
+    return handleApiError(error, 'DELETE /api/cart error:', 'خطا در خالی کردن سبد خرید');
   }
 }

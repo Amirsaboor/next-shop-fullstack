@@ -1,10 +1,10 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
 
-import { connectToDatabase } from "@/lib/db/connect";
-import { handleApiError } from "@/lib/api/handle-api-error";
-import { requireAdmin } from "@/lib/auth/require-admin";
-import { createProductSchema, productQuerySchema } from "@/lib/validations/product.schema";
-import { createProduct, getProducts } from "@/modules/products/services/product.service";
+import { connectToDatabase } from '@/lib/db/connect';
+import { handleApiError } from '@/lib/api/handle-api-error';
+import { requireAdmin } from '@/lib/auth/require-admin';
+import { createProductSchema, productQuerySchema } from '@/lib/validations/product.schema';
+import { createProduct, getProducts } from '@/modules/products/services/product.service';
 
 export async function GET(request: Request) {
   try {
@@ -13,7 +13,11 @@ export async function GET(request: Request) {
 
     if (!validation.success) {
       return NextResponse.json(
-        { success: false, message: validation.error.issues[0]?.message ?? "فیلترهای محصولات معتبر نیستند", errors: validation.error.issues },
+        {
+          success: false,
+          message: validation.error.issues[0]?.message ?? 'فیلترهای محصولات معتبر نیستند',
+          errors: validation.error.issues,
+        },
         { status: 400 },
       );
     }
@@ -27,7 +31,7 @@ export async function GET(request: Request) {
       pagination: result.pagination,
     });
   } catch (error) {
-    return handleApiError(error, "GET /api/products error:", "خطا در دریافت محصولات");
+    return handleApiError(error, 'GET /api/products error:', 'خطا در دریافت محصولات');
   }
 }
 
@@ -40,7 +44,11 @@ export async function POST(request: Request) {
 
     if (!validation.success) {
       return NextResponse.json(
-        { success: false, message: validation.error.issues[0]?.message ?? "اطلاعات محصول معتبر نیست", errors: validation.error.issues },
+        {
+          success: false,
+          message: validation.error.issues[0]?.message ?? 'اطلاعات محصول معتبر نیست',
+          errors: validation.error.issues,
+        },
         { status: 400 },
       );
     }
@@ -50,6 +58,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true, data: product }, { status: 201 });
   } catch (error) {
-    return handleApiError(error, "POST /api/products error:", "خطا در ایجاد محصول");
+    return handleApiError(error, 'POST /api/products error:', 'خطا در ایجاد محصول');
   }
 }

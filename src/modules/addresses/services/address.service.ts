@@ -1,38 +1,27 @@
-import "server-only";
+import 'server-only';
 
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
-import { AppError } from "@/lib/errors/app-error";
-import Address from "@/modules/addresses/models/address.model";
-import type {
-  CreateAddressInput,
-  UpdateAddressInput,
-} from "@/lib/validations/address.schema";
+import { AppError } from '@/lib/errors/app-error';
+import Address from '@/modules/addresses/models/address.model';
+import type { CreateAddressInput, UpdateAddressInput } from '@/lib/validations/address.schema';
 
 function validateId(id: string) {
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    throw new AppError("شناسه آدرس معتبر نیست", 400);
+    throw new AppError('شناسه آدرس معتبر نیست', 400);
   }
 }
 
 export async function getUserAddresses(userId: string) {
-  return Address.find({ user: userId })
-    .sort({ isDefault: -1, createdAt: -1 })
-    .lean();
+  return Address.find({ user: userId }).sort({ isDefault: -1, createdAt: -1 }).lean();
 }
 
-export async function createAddress(
-  userId: string,
-  input: CreateAddressInput,
-) {
+export async function createAddress(userId: string, input: CreateAddressInput) {
   const addressCount = await Address.countDocuments({ user: userId });
   const isDefault = input.isDefault === true || addressCount === 0;
 
   if (isDefault) {
-    await Address.updateMany(
-      { user: userId },
-      { $set: { isDefault: false } },
-    );
+    await Address.updateMany({ user: userId }, { $set: { isDefault: false } });
   }
 
   return Address.create({
@@ -42,11 +31,7 @@ export async function createAddress(
   });
 }
 
-export async function updateAddress(
-  userId: string,
-  addressId: string,
-  input: UpdateAddressInput,
-) {
+export async function updateAddress(userId: string, addressId: string, input: UpdateAddressInput) {
   validateId(addressId);
 
   const currentAddress = await Address.findOne({
@@ -55,14 +40,11 @@ export async function updateAddress(
   });
 
   if (!currentAddress) {
-    throw new AppError("آدرس موردنظر پیدا نشد", 404);
+    throw new AppError('آدرس موردنظر پیدا نشد', 404);
   }
 
   if (input.isDefault === true) {
-    await Address.updateMany(
-      { user: userId },
-      { $set: { isDefault: false } },
-    );
+    await Address.updateMany({ user: userId }, { $set: { isDefault: false } });
   }
 
   const updatedAddress = await Address.findOneAndUpdate(
@@ -72,7 +54,7 @@ export async function updateAddress(
   );
 
   if (!updatedAddress) {
-    throw new AppError("ویرایش آدرس انجام نشد", 500);
+    throw new AppError('ویرایش آدرس انجام نشد', 500);
   }
 
   if (input.isDefault === false && currentAddress.isDefault) {
@@ -99,7 +81,7 @@ export async function deleteAddress(userId: string, addressId: string) {
   });
 
   if (!address) {
-    throw new AppError("آدرس موردنظر پیدا نشد", 404);
+    throw new AppError('آدرس موردنظر پیدا نشد', 404);
   }
 
   await address.deleteOne();

@@ -1,18 +1,15 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
 
-import { connectToDatabase } from "@/lib/db/connect";
-import { handleApiError } from "@/lib/api/handle-api-error";
-import { requireUser } from "@/lib/auth/require-user";
-import { getUserOrderById } from "@/modules/orders/services/order.service";
+import { connectToDatabase } from '@/lib/db/connect';
+import { handleApiError } from '@/lib/api/handle-api-error';
+import { requireUser } from '@/lib/auth/require-user';
+import { getUserOrderById } from '@/modules/orders/services/order.service';
 
 type RouteContext = {
   params: Promise<{ orderId: string }>;
 };
 
-export async function GET(
-  _request: Request,
-  { params }: RouteContext,
-) {
+export async function GET(_request: Request, { params }: RouteContext) {
   try {
     const { userId } = await requireUser();
     await connectToDatabase();
@@ -25,10 +22,6 @@ export async function GET(
       data: order,
     });
   } catch (error) {
-    return handleApiError(
-      error,
-      "GET /api/orders/[orderId] error:",
-      "خطا در دریافت سفارش",
-    );
+    return handleApiError(error, 'GET /api/orders/[orderId] error:', 'خطا در دریافت سفارش');
   }
 }

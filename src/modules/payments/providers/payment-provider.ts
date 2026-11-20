@@ -1,6 +1,6 @@
-import "server-only";
+import 'server-only';
 
-import { AppError } from "@/lib/errors/app-error";
+import { AppError } from '@/lib/errors/app-error';
 
 export type CreatePaymentInput = {
   orderId: string;
@@ -21,12 +21,10 @@ export interface PaymentProvider {
 }
 
 class UnconfiguredPaymentProvider implements PaymentProvider {
-  readonly name = "unconfigured";
+  readonly name = 'unconfigured';
 
-  async createPayment(
-    _input: CreatePaymentInput,
-  ): Promise<CreatePaymentResult> {
-    throw new AppError("درگاه پرداخت هنوز پیکربندی نشده است", 503);
+  async createPayment(_input: CreatePaymentInput): Promise<CreatePaymentResult> {
+    throw new AppError('درگاه پرداخت هنوز پیکربندی نشده است', 503);
   }
 }
 
