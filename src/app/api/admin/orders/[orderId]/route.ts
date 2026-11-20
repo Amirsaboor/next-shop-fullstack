@@ -11,7 +11,10 @@ const updateSchema = z.object({
   status: z.enum(['processing', 'shipped', 'delivered', 'cancelled']),
 }).strict();
 
-export async function GET(_request: Request, { params }: RouteContext) {
+export async function GET(request: Request, { params }: RouteContext) {
+  // Access request data before try/catch so Next.js can bail out of prerendering.
+  void request.url;
+
   try {
     await requireAdmin();
     const { orderId } = await params;
