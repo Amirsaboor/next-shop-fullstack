@@ -217,10 +217,10 @@ export async function getProducts(options: GetProductsOptions = {}) {
   };
 }
 
-export async function getProductById(id: string) {
+export async function getProductById(id: string, includeInactive = false) {
   validateProductId(id);
 
-  const product = await Product.findOne({ _id: id, isActive: true })
+  const product = await Product.findOne({ _id: id, ...(includeInactive ? {} : { isActive: true }) })
     .populate('category', 'name slug')
     .lean();
 
