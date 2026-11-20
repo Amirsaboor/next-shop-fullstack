@@ -7,9 +7,11 @@ import { adminProductQuerySchema, createProductSchema } from '@/lib/validations/
 import { createProduct, getProducts } from '@/modules/products/services/product.service';
 
 export async function GET(request: Request) {
+  // Access request data before try/catch so Next.js can bail out of prerendering.
+  const { searchParams } = new URL(request.url);
+
   try {
     await requireAdmin();
-    const { searchParams } = new URL(request.url);
     const validation = adminProductQuerySchema.safeParse(Object.fromEntries(searchParams.entries()));
 
     if (!validation.success) {
