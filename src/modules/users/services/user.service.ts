@@ -52,13 +52,24 @@ export async function getAdminUsers(options: {
   };
 }
 
-export async function updateUserStatus(\n  userId: string,\n  isActive: boolean,\n  currentAdminId: string,\n  currentAdminRole: 'admin' | 'super_admin',\n) {
+export async function updateUserStatus(
+  userId: string,
+  isActive: boolean,
+  currentAdminId: string,
+  currentAdminRole: 'admin' | 'super_admin',
+) {
   if (!mongoose.isObjectIdOrHexString(userId)) throw new AppError('شناسه کاربر معتبر نیست', 400);
   if (userId === currentAdminId && !isActive) {
     throw new AppError('امکان غیرفعال کردن حساب کاربری خودتان وجود ندارد', 400);
   }
 
-  const targetUser = await User.findById(userId).select('role').lean();\n  if (!targetUser) throw new AppError('کاربر موردنظر پیدا نشد', 404);\n  if (!isActive && targetUser.role !== 'customer' && currentAdminRole !== 'super_admin') {\n    throw new AppError('فقط مدیر ارشد می‌تواند حساب مدیران را غیرفعال کند', 403);\n  }\n\n  const user = await User.findByIdAndUpdate(
+  const targetUser = await User.findById(userId).select('role').lean();
+  if (!targetUser) throw new AppError('کاربر موردنظر پیدا نشد', 404);
+  if (!isActive && targetUser.role !== 'customer' && currentAdminRole !== 'super_admin') {
+    throw new AppError('فقط مدیر ارشد می‌تواند حساب مدیران را غیرفعال کند', 403);
+  }
+
+  const user = await User.findByIdAndUpdate(
     userId,
     { $set: { isActive } },
     { new: true, runValidators: true },
