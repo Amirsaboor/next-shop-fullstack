@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import { handleApiError } from '@/lib/api/site/handle-api-error';
+import { handleApiError } from '@/lib/api/handle-api-error';
 import { getCartOwner } from '@/modules/cart/services/cart-owner.service';
 import { clearCart, getCart } from '@/modules/cart/services/cart.service';
 
