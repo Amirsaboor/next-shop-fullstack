@@ -15,9 +15,11 @@ const querySchema = z.object({
 }).strict();
 
 export async function GET(request: Request) {
+  // Access request data before try/catch so Next.js can bail out of prerendering.
+  const { searchParams } = new URL(request.url);
+
   try {
     await requireAdmin();
-    const { searchParams } = new URL(request.url);
     const validation = querySchema.safeParse(Object.fromEntries(searchParams.entries()));
     if (!validation.success) {
       return NextResponse.json({ success: false, message: validation.error.issues[0]?.message ?? 'فیلتر کاربران معتبر نیست' }, { status: 400 });
