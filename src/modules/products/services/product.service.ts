@@ -59,6 +59,8 @@ export type GetProductsOptions = {
   maxPrice?: number;
   sort?: 'newest' | 'oldest' | 'price-asc' | 'price-desc' | 'name';
   featured?: boolean;
+  isActive?: boolean;
+  includeInactive?: boolean;
 };
 
 function validateProductId(id: string) {
@@ -121,7 +123,9 @@ function validateVariants(hasVariants: boolean, variants: ProductVariantInput[])
 export async function getProducts(options: GetProductsOptions = {}) {
   const page = Math.max(1, Math.floor(options.page ?? 1));
   const limit = Math.min(100, Math.max(1, Math.floor(options.limit ?? 12)));
-  const filter: Record<string, unknown> = { isActive: true };
+  const filter: Record<string, unknown> = options.includeInactive
+    ? {}
+    : { isActive: options.isActive ?? true };
 
   if (options.category) {
     if (!mongoose.isObjectIdOrHexString(options.category)) {
