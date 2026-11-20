@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
 import { connectToDatabase } from '@/lib/db/connect';
-import { handleApiError } from '@/lib/api/site/handle-api-error';
+import { handleApiError } from '@/lib/api/handle-api-error';
 import { requireUser } from '@/lib/auth/require-user';
 import { initializePaymentSchema } from '@/lib/validations/payment.schema';
 import { initializeOrderPayment } from '@/modules/payments/services/payment.service';
