@@ -5,7 +5,10 @@ import { handleApiError } from '@/lib/api/handle-api-error';
 import { requireAdmin } from '@/lib/auth/require-admin';
 import { getAdminDashboardStats } from '@/modules/dashboard/services/dashboard.service';
 
-export async function GET() {
+export async function GET(request: Request) {
+  // Access request data before try/catch so Next.js can bail out of prerendering.
+  void request.url;
+
   try {
     await requireAdmin();
     await connectToDatabase();
