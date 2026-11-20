@@ -6,8 +6,10 @@ import { productQuerySchema } from '@/lib/validations/product.schema';
 import { getProducts } from '@/modules/products/services/product.service';
 
 export async function GET(request: Request) {
+  // Read request-time URL data before the catch block so Next.js can bail out of prerendering.
+  const { searchParams } = new URL(request.url);
+
   try {
-    const { searchParams } = new URL(request.url);
     const validation = productQuerySchema.safeParse(Object.fromEntries(searchParams.entries()));
 
     if (!validation.success) {
