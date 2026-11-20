@@ -66,7 +66,7 @@ async function validateParent(parentId: string, categoryId?: string) {
   }
 }
 
-export async function getActiveCategories() {
+export async function getAllCategories() {\n  return Category.find().sort({ sortOrder: 1, name: 1 }).lean();\n}\n\nexport async function getActiveCategories() {
   return Category.find({ isActive: true }).sort({ sortOrder: 1, name: 1 }).lean();
 }
 
