@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { connection, NextResponse } from 'next/server';
 import { z } from 'zod';
 
 import { connectToDatabase } from '@/lib/db/connect';
@@ -12,6 +12,9 @@ const updateSchema = z.object({
 }).strict();
 
 export async function GET(request: Request, { params }: RouteContext) {
+  // These endpoints depend on the current request's authentication cookie.
+  await connection();
+
   // Access request data before try/catch so Next.js can bail out of prerendering.
   void request.url;
 
