@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { connection, NextResponse } from 'next/server';
 
 import { connectToDatabase } from '@/lib/db/connect';
 import { handleApiError } from '@/lib/api/handle-api-error';
@@ -7,6 +7,9 @@ import { createCategorySchema } from '@/lib/validations/category.schema';
 import { createCategory, getAllCategories } from '@/modules/categories/services/category.service';
 
 export async function GET(request: Request) {
+  // These endpoints depend on the current request's authentication cookie.
+  await connection();
+
   // Access request data before try/catch so Next.js can bail out of prerendering.
   const { searchParams } = new URL(request.url);
 
