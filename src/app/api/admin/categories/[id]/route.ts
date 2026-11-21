@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { connection, NextResponse } from 'next/server';
 
 import { connectToDatabase } from '@/lib/db/connect';
 import { handleApiError } from '@/lib/api/handle-api-error';
@@ -9,6 +9,9 @@ import { deleteCategory, getCategoryById, updateCategory } from '@/modules/categ
 type RouteContext = { params: Promise<{ id: string }> };
 
 export async function GET(request: Request, { params }: RouteContext) {
+  // These endpoints depend on the current request's authentication cookie.
+  await connection();
+
   // Access request data before try/catch so Next.js can bail out of prerendering.
   void request.url;
 
