@@ -1,3 +1,4 @@
+import AppIcon from '@/components/ui/AppIcon';
 'use client';
 
 import Link from 'next/link';
@@ -135,7 +136,7 @@ export default function UsersPage() {
           type="button"
           className="inline-flex h-10 items-center gap-2 self-start rounded-xl border border-[#e8eaee] bg-white/70 px-4 text-[11px] font-semibold text-[#657080] transition hover:border-[#ffb69c] dark:border-white/10 dark:bg-white/[0.04] dark:text-white/65"
         >
-          ↓ دریافت گزارش
+          <AppIcon name="download" size={15} /> دریافت گزارش
         </button>
       </div>
 
@@ -145,28 +146,28 @@ export default function UsersPage() {
             label: 'کل کاربران',
             value: '۱,۲۸۴',
             note: 'تمام حساب‌های ثبت‌شده',
-            icon: '♙',
+            icon: 'user',
             tone: 'bg-[#fff0e9] text-[#ff5a1f]',
           },
           {
             label: 'کاربران فعال',
             value: '۱,۱۹۶',
             note: '۹۳٪ از کل کاربران',
-            icon: '✓',
+            icon: 'check-circle',
             tone: 'bg-emerald-50 text-emerald-600',
           },
           {
             label: 'ثبت‌نام این ماه',
             value: '۸۶',
             note: 'کاربران جدید',
-            icon: '＋',
+            icon: 'user',
             tone: 'bg-blue-50 text-blue-600',
           },
           {
             label: 'حساب‌های مسدود',
             value: '۱۲',
             note: 'نیازمند بررسی',
-            icon: '⊘',
+            icon: 'slash',
             tone: 'bg-rose-50 text-rose-600',
           },
         ].map((card) => (
@@ -179,7 +180,7 @@ export default function UsersPage() {
               <span
                 className={`flex h-9 w-9 items-center justify-center rounded-xl text-lg ${card.tone}`}
               >
-                {card.icon}
+                <AppIcon name={card.icon} size={18} />
               </span>
             </div>
             <strong className="mt-3 block text-2xl font-extrabold tracking-tight text-[#252a31] dark:text-white">
@@ -200,9 +201,7 @@ export default function UsersPage() {
           </div>
           <div className="grid gap-2 sm:grid-cols-2 xl:flex">
             <div className="relative">
-              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#9aa1ad]">
-                ⌕
-              </span>
+              <AppIcon name="search" size={16} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#9aa1ad]" />
               <input
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
@@ -327,7 +326,7 @@ export default function UsersPage() {
           </table>
           {filtered.length === 0 && (
             <div className="py-14 text-center">
-              <span className="text-3xl text-[#c4c9d1]">⌕</span>
+              <AppIcon name="search" size={30} className="text-[#c4c9d1]" />
               <p className="mt-3 text-xs font-semibold text-[#68717d] dark:text-white/60">
                 کاربری با این مشخصات پیدا نشد.
               </p>
