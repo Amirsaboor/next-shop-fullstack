@@ -30,8 +30,15 @@ body {
   min-height: 100vh;
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-vazirmatn), Arial, sans-serif;
+  font-family: var(--font-vazirmatn), Tahoma, Arial, sans-serif;
   font-feature-settings: 'ss01';
+}
+
+/* Keep the Persian font consistent inside the admin UI, including
+   components that explicitly use Tailwind's font-sans utility. */
+.admin-theme,
+.admin-theme :where(*) {
+  font-family: var(--font-vazirmatn), Tahoma, Arial, sans-serif;
 }
 
 button,
