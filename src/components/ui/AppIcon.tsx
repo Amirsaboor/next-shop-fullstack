@@ -1,6 +1,7 @@
 import type { IconType } from 'react-icons';
 import {
   FiActivity, FiArrowLeft, FiBell, FiBox, FiCheckCircle, FiChevronLeft, FiClock,
+  FiCloud, FiCode,
   FiCpu, FiDownload, FiEdit2, FiFileText, FiGrid, FiHeadphones, FiLayers, FiLink,
   FiLogOut, FiMenu, FiMinusCircle, FiMonitor, FiMoon, FiMoreHorizontal, FiMusic,
   FiPackage, FiPlus, FiSearch, FiSettings, FiSlash, FiSmartphone, FiSun, FiTrendingUp,
