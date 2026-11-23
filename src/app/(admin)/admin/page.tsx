@@ -235,7 +235,7 @@ export default function AdminDashboardPage() {
             />
           </div>
         </article>
-        <article className="relative overflow-hidden rounded-2xl bg-[#15181d] p-6 text-white shadow-[0_8px_28px_rgba(18,20,23,0.12)]">
+        <article className="relative overflow-hidden rounded-2xl border border-[#e8eaee] bg-white/75 p-6 text-[#252a31] shadow-[0_8px_28px_rgba(18,20,23,0.07)] transition-colors dark:border-white/10 dark:bg-[#20242c] dark:text-white">
           <div className="absolute -left-12 -top-12 h-44 w-44 rounded-full border-[24px] border-[#ff5a1f]/10" />
           <div className="absolute -left-4 top-16 h-24 w-24 rounded-full bg-[#ff5a1f]/10 blur-2xl" />
           <div className="relative">
@@ -243,13 +243,13 @@ export default function AdminDashboardPage() {
               <Icon name="chart" size={22} />
             </span>
             <p className="mt-5 text-base font-bold">فروشگاه در مسیر رشد</p>
-            <p className="mt-2 text-[11px] leading-7 text-white/50">
+            <p className="mt-2 text-[11px] leading-7 text-[#7f8792] dark:text-white/50">
               زیرساخت اصلی فروشگاه آماده است. با تکمیل صفحات مدیریت محصولات و سفارش‌ها، ابزارهای
               مدیریتی را مرحله‌به‌مرحله فعال می‌کنیم.
             </p>
-            <div className="mt-6 flex items-center justify-between border-t border-white/10 pt-4">
-              <span className="text-[10px] text-white/45">مرحله بعدی توسعه</span>
-              <span className="rounded-lg bg-white/10 px-3 py-2 text-[10px] font-semibold">
+            <div className="mt-6 flex items-center justify-between border-t border-[#eef0f3] pt-4 dark:border-white/10">
+              <span className="text-[10px] text-[#9299a3] dark:text-white/45">مرحله بعدی توسعه</span>
+              <span className="rounded-lg bg-[#f3f4f6] px-3 py-2 text-[10px] font-semibold text-[#6f7782] dark:bg-white/10 dark:text-white/80">
                 مدیریت محصولات
               </span>
             </div>
