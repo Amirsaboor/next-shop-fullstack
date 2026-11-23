@@ -147,7 +147,7 @@ export default function AdminShell({ children }: { children: ReactNode }) {
   const sidebarWidth = collapsed ? 'lg:mr-[88px]' : 'lg:mr-[264px]';
 
   return (
-    <div className="admin-theme relative isolate min-h-screen overflow-hidden bg-[#f5f6f8] text-[#17191d] transition-colors dark:bg-[#101216] dark:text-[#f4f5f7]">
+    <div className={`admin-theme relative isolate min-h-screen overflow-hidden bg-[#f5f6f8] text-[#17191d] transition-colors dark:bg-[#101216] dark:text-[#f4f5f7] ${dark ? "dark" : ""}`}>
       <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
         <div className="absolute -right-36 top-24 h-[430px] w-[430px] rounded-full bg-[#ff5a1f]/[0.14] blur-[105px] dark:bg-[#ff5a1f]/[0.20]" />
         <div className="absolute left-[18%] top-[42%] h-[360px] w-[360px] rounded-full bg-[#7c8cff]/[0.09] blur-[110px] dark:bg-[#7788ff]/[0.13]" />
