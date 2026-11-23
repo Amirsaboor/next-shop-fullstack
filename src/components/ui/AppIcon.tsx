@@ -9,6 +9,7 @@ import {
 
 const icons: Record<string, IconType> = {
   activity: FiActivity, arrow: FiArrowLeft, bell: FiBell, box: FiBox,
+  cloud: FiCloud, code: FiCode,
   'check-circle': FiCheckCircle, chevron: FiChevronLeft, clock: FiClock, cpu: FiCpu,
   download: FiDownload, edit: FiEdit2, file: FiFileText, grid: FiGrid,
   headphones: FiHeadphones, layers: FiLayers, link: FiLink, logout: FiLogOut,
