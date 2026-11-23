@@ -1,3 +1,4 @@
+import AppIcon from '@/components/ui/AppIcon';
 import Link from 'next/link';
 
 const groups = [
@@ -8,7 +9,7 @@ const groups = [
     products: 34,
     status: 'فعال',
     updated: '۱۴۰۵/۰۸/۲۷',
-    icon: '▣',
+    icon: 'monitor',
   },
   {
     name: 'لوازم جانبی موبایل',
@@ -17,7 +18,7 @@ const groups = [
     products: 42,
     status: 'فعال',
     updated: '۱۴۰۵/۰۸/۲۶',
-    icon: '▯',
+    icon: 'smartphone',
   },
   {
     name: 'لوازم جانبی کامپیوتر',
@@ -26,7 +27,7 @@ const groups = [
     products: 28,
     status: 'فعال',
     updated: '۱۴۰۵/۰۸/۲۴',
-    icon: '⌨',
+    icon: 'cpu',
   },
   {
     name: 'صوتی و تصویری',
@@ -35,7 +36,7 @@ const groups = [
     products: 16,
     status: 'غیرفعال',
     updated: '۱۴۰۵/۰۸/۲۰',
-    icon: '♫',
+    icon: 'music',
   },
   {
     name: 'گجت‌های هوشمند',
@@ -44,7 +45,7 @@ const groups = [
     products: 8,
     status: 'فعال',
     updated: '۱۴۰۵/۰۸/۱۸',
-    icon: '◈',
+    icon: 'watch',
   },
 ];
 
@@ -72,7 +73,7 @@ export default function GroupsPage() {
           </p>
         </div>
         <button className="inline-flex h-11 items-center gap-2 self-start rounded-xl bg-[#ff5a1f] px-5 text-xs font-bold text-white shadow-lg shadow-[#ff5a1f]/20">
-          ＋ افزودن گروه
+          <AppIcon name="plus" size={16} /> افزودن گروه
         </button>
       </div>
       <div className="grid grid-cols-2 gap-3 xl:grid-cols-3">
@@ -89,7 +90,7 @@ export default function GroupsPage() {
             <div className="mt-2 flex items-center justify-between">
               <strong className="text-2xl text-[#252a31] dark:text-white">{b}</strong>
               <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#fff0e9] text-[#ff5a1f]">
-                {['◫', '✓', '＋'][i]}
+                <AppIcon name={['grid', 'check-circle', 'plus'][i]} size={17} />
               </span>
             </div>
           </div>
@@ -146,7 +147,7 @@ export default function GroupsPage() {
                   <td className="border-b border-[#f0f1f3] px-4 py-3.5 dark:border-white/[0.06]">
                     <div className="flex items-center gap-3">
                       <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#fff0e9] text-lg text-[#ff5a1f]">
-                        {g.icon}
+                        <AppIcon name={g.icon} size={20} />
                       </span>
                       <span className="font-bold text-[#343a43] dark:text-white/85">{g.name}</span>
                     </div>
@@ -172,10 +173,10 @@ export default function GroupsPage() {
                   </td>
                   <td className="border-b border-[#f0f1f3] px-4 py-3.5 dark:border-white/[0.06]">
                     <button className="rounded-lg p-2 text-[#818995] hover:bg-[#fff0e9] hover:text-[#ff5a1f]">
-                      ✎
+                      <AppIcon name="edit" size={16} />
                     </button>
                     <button className="rounded-lg p-2 text-[#818995] hover:bg-rose-50 hover:text-rose-500">
-                      •••
+                      <AppIcon name="more" size={16} />
                     </button>
                   </td>
                 </tr>
