@@ -1,5 +1,6 @@
-import AppIcon from '@/components/ui/AppIcon';
 'use client';
+
+import AppIcon from '@/components/ui/AppIcon';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
