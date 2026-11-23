@@ -1,3 +1,4 @@
+import AppIcon from '@/components/ui/AppIcon';
 'use client';
 
 import Link from 'next/link';
@@ -79,16 +80,16 @@ export default function ProductsPage() {
           </p>
         </div>
         <button className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#ff5a1f] px-5 text-xs font-bold text-white shadow-lg shadow-[#ff5a1f]/20 transition hover:-translate-y-0.5 hover:bg-[#ed4c14]">
-          <span className="text-lg leading-none">＋</span> افزودن محصول
+          <AppIcon name="plus" size={16} /> افزودن محصول
         </button>
       </div>
 
       <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
         {[
-          ['همه محصولات', '۱۲۸', '◫'],
-          ['محصولات فعال', '۱۰۶', '✓'],
-          ['غیرفعال', '۱۴', '◌'],
-          ['ناموجود', '۸', '▤'],
+          ['همه محصولات', '۱۲۸', 'grid'],
+          ['محصولات فعال', '۱۰۶', 'check-circle'],
+          ['غیرفعال', '۱۴', 'minus-circle'],
+          ['ناموجود', '۸', 'package'],
         ].map(([label, value, icon], i) => (
           <div
             key={label}
@@ -105,7 +106,7 @@ export default function ProductsPage() {
               <span
                 className={`flex h-10 w-10 items-center justify-center rounded-xl text-lg ${i === 1 ? 'bg-emerald-50 text-emerald-600' : 'bg-[#fff0e9] text-[#ff5a1f]'}`}
               >
-                {icon}
+                <AppIcon name={icon} size={18} />
               </span>
             </div>
           </div>
@@ -121,12 +122,12 @@ export default function ProductsPage() {
             </p>
           </div>
           <button className="h-9 rounded-lg border border-[#e8eaee] px-3 text-[10px] font-semibold text-[#69717d] hover:border-[#ffb69c] dark:border-white/10 dark:text-white/65">
-            خروجی گرفتن ↓
+            <AppIcon name="download" size={14} /> خروجی گرفتن
           </button>
         </div>
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-[minmax(220px,1.7fr)_1fr_1fr_1fr_auto]">
           <label className="relative">
-            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#a0a6af]">⌕</span>
+            <AppIcon name="search" size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#a0a6af]" />
             <input
               placeholder="جست‌وجوی نام یا کد محصول..."
               className="h-11 w-full rounded-xl border border-[#e8eaee] bg-white/75 pr-9 pl-3 text-[11px] outline-none placeholder:text-[#a6acb5] focus:border-[#ff9b78] dark:border-white/10 dark:bg-white/[0.04] dark:text-white"
@@ -178,7 +179,7 @@ export default function ProductsPage() {
                       <div
                         className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-lg ${['bg-[#fff0e9] text-[#ff5a1f]', 'bg-[#eef2ff] text-[#6574c9]', 'bg-[#eff7f5] text-[#4a9280]'][i % 3]}`}
                       >
-                        {['⌨', '◉', '♬', '▣', '⌁', '◍'][i]}
+                        <AppIcon name={['cpu', 'headphones', 'music', 'monitor', 'link', 'volume'][i]} size={19} />
                       </div>
                       <div>
                         <p className="font-bold text-[#343a43] dark:text-white/85">{p.name}</p>
@@ -218,13 +219,13 @@ export default function ProductsPage() {
                         className="rounded-lg p-2 text-[#818995] hover:bg-[#fff0e9] hover:text-[#ff5a1f]"
                         title="ویرایش"
                       >
-                        ✎
+                        <AppIcon name="edit" size={16} />
                       </button>
                       <button
                         className="rounded-lg p-2 text-[#818995] hover:bg-rose-50 hover:text-rose-500"
                         title="بیشتر"
                       >
-                        •••
+                        <AppIcon name="more" size={16} />
                       </button>
                     </div>
                   </td>
