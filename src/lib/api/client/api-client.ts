@@ -1,79 +1,93 @@
-export type ApiSuccessResponse<T> = {
-  success: true;
-  data: T;
-};
+'use client';
 
-type ApiErrorResponse = {
-  success: false;
-  message?: string;
-};
+import {
+  ApiError,
+  getApiErrorRedirectPath,
+  parseApiResponse,
+  shouldRedirectOnApiError,
+} from '@/lib/api/shared/api-error';
+import { buildApiRequestInit, resolveApiUrl } from '@/lib/api/shared/api-utils';
+import type { ApiRequestOptions } from '@/lib/api/shared/api-types';
 
-export class ApiRequestError extends Error {
-  status: number;
+export { ApiError as ApiRequestError };
+export type { ApiSuccessResponse } from '@/lib/api/shared/api-types';
 
-  constructor(message: string, status: number) {
-    super(message);
-    this.name = 'ApiRequestError';
-    this.status = status;
-  }
-}
-
-function isApiErrorResponse(value: unknown): value is ApiErrorResponse {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    'success' in value &&
-    value.success === false
-  );
-}
+const DEFAULT_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? '';
 
 export async function apiRequest<T>(
   input: RequestInfo | URL,
-  init?: RequestInit,
+  options: ApiRequestOptions | RequestInit = {},
 ): Promise<T> {
-  const response = await fetch(input, {
-    ...init,
-    headers: {
-      Accept: 'application/json',
-      ...init?.headers,
-    },
-  });
+  // RequestInit remains accepted for compatibility with existing API callers.
+  const requestOptions = options as ApiRequestOptions;
+  const {
+    baseURL = DEFAULT_BASE_URL,
+    redirectOnError = true,
+    redirectTo,
+  } = requestOptions;
 
-  let result: unknown;
+  const requestUrl = resolveApiUrl(input, baseURL);
+  const requestInit = buildApiRequestInit(requestOptions, 'same-origin');
+
+  let response: Response;
 
   try {
-    result = await response.json();
-  } catch {
-    throw new ApiRequestError('پاسخ سرور قابل خواندن نیست', response.status);
+    response = await fetch(requestUrl, requestInit);
+  } catch (error) {
+    throw new ApiError('ارتباط با سرور برقرار نشد', 0, {
+      details: error,
+    });
   }
 
-  if (!response.ok) {
-    const message = isApiErrorResponse(result)
-      ? result.message
-      : undefined;
+  try {
+    return await parseApiResponse<T>(response);
+  } catch (error) {
+    if (!(error instanceof ApiError)) {
+      throw error;
+    }
 
-    throw new ApiRequestError(
-      message || 'در ارتباط با سرور خطایی رخ داد',
-      response.status,
-    );
+    if (redirectOnError && shouldRedirectOnApiError(error)) {
+      window.location.assign(getApiErrorRedirectPath(error, redirectTo));
+    }
+
+    throw error;
   }
+}
 
-  if (isApiErrorResponse(result)) {
-    throw new ApiRequestError(
-      result.message || 'در پردازش درخواست خطایی رخ داد',
-      response.status,
-    );
-  }
+export function apiGet<T>(
+  input: RequestInfo | URL,
+  options: Omit<ApiRequestOptions, 'method' | 'body'> = {},
+) {
+  return apiRequest<T>(input, { ...options, method: 'GET' });
+}
 
-  if (
-    typeof result !== 'object' ||
-    result === null ||
-    !('success' in result) ||
-    result.success !== true ||
-    !('data' in result)
-  ) {
-    throw new ApiRequestError('ساختار پاسخ سرور معتبر نیست', response.status);
-  }
+export function apiPost<T>(
+  input: RequestInfo | URL,
+  body?: unknown,
+  options: Omit<ApiRequestOptions, 'method' | 'body'> = {},
+) {
+  return apiRequest<T>(input, { ...options, method: 'POST', body });
+}
 
-  return result.data as T;
+export function apiPut<T>(
+  input: RequestInfo | URL,
+  body?: unknown,
+  options: Omit<ApiRequestOptions, 'method' | 'body'> = {},
+) {
+  return apiRequest<T>(input, { ...options, method: 'PUT', body });
+}
+
+export function apiPatch<T>(
+  input: RequestInfo | URL,
+  body?: unknown,
+  options: Omit<ApiRequestOptions, 'method' | 'body'> = {},
+) {
+  return apiRequest<T>(input, { ...options, method: 'PATCH', body });
+}
+
+export function apiDelete<T>(
+  input: RequestInfo | URL,
+  options: Omit<ApiRequestOptions, 'method' | 'body'> = {},
+) {
+  return apiRequest<T>(input, { ...options, method: 'DELETE' });
 }
