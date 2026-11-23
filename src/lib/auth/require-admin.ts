@@ -26,4 +26,6 @@ export async function requireAdmin() {
   if (user.role !== 'admin' && user.role !== 'super_admin') {
     throw new AppError('شما دسترسی لازم برای انجام این عملیات را ندارید', 403);
   }
+
+  return { userId: session.userId, user };
 }

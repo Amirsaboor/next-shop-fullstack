@@ -66,6 +66,10 @@ async function validateParent(parentId: string, categoryId?: string) {
   }
 }
 
+export async function getAllCategories() {
+  return Category.find().sort({ sortOrder: 1, name: 1 }).lean();
+}
+
 export async function getActiveCategories() {
   return Category.find({ isActive: true }).sort({ sortOrder: 1, name: 1 }).lean();
 }
@@ -79,10 +83,10 @@ export async function getRootCategories() {
     .lean();
 }
 
-export async function getCategoryById(id: string) {
+export async function getCategoryById(id: string, includeInactive = false) {
   validateCategoryId(id);
 
-  const category = await Category.findById(id).lean();
+  const category = await Category.findOne({ _id: id, ...(includeInactive ? {} : { isActive: true }) }).lean();
 
   if (!category) {
     throw new AppError('دسته‌بندی پیدا نشد', 404);

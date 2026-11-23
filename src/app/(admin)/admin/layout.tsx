@@ -1,6 +1,17 @@
 import type { ReactNode } from 'react';
-import AdminShell from '@/components/admin/AdminShell';
+import { redirect } from 'next/navigation';
 
-export default function AdminLayout({ children }: { children: ReactNode }) {
+import AdminShell from '@/components/admin/AdminShell';
+import { requireAdmin } from '@/lib/auth/require-admin';
+
+export const instant = false;
+
+export default async function AdminLayout({ children }: { children: ReactNode }) {
+  try {
+    await requireAdmin();
+  } catch {
+    redirect('/');
+  }
+
   return <AdminShell>{children}</AdminShell>;
 }

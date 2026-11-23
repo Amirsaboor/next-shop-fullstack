@@ -251,3 +251,77 @@ export async function getUserOrderById(userId: string, orderId: string) {
 
   return order;
 }
+
+
+const adminOrderStatuses = ['processing', 'shipped', 'delivered', 'cancelled'] as const;
+export type AdminOrderStatus = (typeof adminOrderStatuses)[number];
+
+export async function getAdminOrders(options: {
+  page?: number;
+  limit?: number;
+  status?: string;
+  search?: string;
+}) {
+  const page = Math.max(1, Math.floor(options.page ?? 1));
+  const limit = Math.min(100, Math.max(1, Math.floor(options.limit ?? 12)));
+  const filter: Record<string, unknown> = {};
+
+  if (options.status && options.status !== 'all') filter.status = options.status;
+  if (options.search?.trim()) {
+    const escaped = options.search.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    filter.orderNumber = { $regex: escaped, $options: 'i' };
+  }
+
+  const [items, total] = await Promise.all([
+    Order.find(filter)
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .populate('user', 'firstName lastName mobile email')
+      .lean(),
+    Order.countDocuments(filter),
+  ]);
+
+  return {
+    items,
+    pagination: {
+      page, limit, total,
+      totalPages: Math.ceil(total / limit),
+      hasNextPage: page * limit < total,
+      hasPreviousPage: page > 1,
+    },
+  };
+}
+
+export async function getAdminOrderById(orderId: string) {
+  if (!mongoose.isObjectIdOrHexString(orderId)) throw new AppError('شناسه سفارش معتبر نیست', 400);
+  const order = await Order.findById(orderId).populate('user', 'firstName lastName mobile email').lean();
+  if (!order) throw new AppError('سفارش موردنظر پیدا نشد', 404);
+  return order;
+}
+
+export async function updateAdminOrderStatus(orderId: string, status: AdminOrderStatus) {
+  if (!mongoose.isObjectIdOrHexString(orderId)) throw new AppError('شناسه سفارش معتبر نیست', 400);
+
+  const order = await Order.findById(orderId).select('status payment.status').lean();
+  if (!order) throw new AppError('سفارش موردنظر پیدا نشد', 404);
+
+  const allowedNextStatuses: Record<string, string[]> = {
+    paid: ['processing', 'cancelled'],
+    processing: ['shipped', 'cancelled'],
+    shipped: ['delivered'],
+  };
+
+  if (!allowedNextStatuses[order.status]?.includes(status)) {
+    throw new AppError('تغییر وضعیت سفارش در این مرحله مجاز نیست', 409);
+  }
+
+  const updated = await Order.findByIdAndUpdate(
+    orderId,
+    { $set: { status } },
+    { new: true, runValidators: true },
+  ).lean();
+
+  if (!updated) throw new AppError('سفارش موردنظر پیدا نشد', 404);
+  return updated;
+}

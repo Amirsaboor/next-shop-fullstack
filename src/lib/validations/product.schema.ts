@@ -95,3 +95,14 @@ export const productQuerySchema = z.object({
   (query) => query.minPrice === undefined || query.maxPrice === undefined || query.minPrice <= query.maxPrice,
   { path: ["minPrice"], message: "حداقل قیمت نمی‌تواند بیشتر از حداکثر قیمت باشد" },
 );
+
+
+export const adminProductQuerySchema = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(12),
+  category: objectIdSchema.optional(),
+  search: z.string().trim().max(120).optional(),
+  sort: z.enum(["newest", "oldest", "price-asc", "price-desc", "name"]).default("newest"),
+  featured: z.enum(["true", "false"]).transform((value) => value === "true").optional(),
+  status: z.enum(["active", "inactive", "all"]).default("all"),
+}).strict();
