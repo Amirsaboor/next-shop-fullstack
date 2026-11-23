@@ -1,65 +1,5 @@
+import AppIcon from '@/components/ui/AppIcon';
 import Link from 'next/link';
-
-function Icon({ name, size = 21 }: { name: string; size?: number }) {
-  const common = {
-    fill: 'none',
-    stroke: 'currentColor',
-    strokeWidth: 1.7,
-    strokeLinecap: 'round' as const,
-    strokeLinejoin: 'round' as const,
-  };
-  const shapes: Record<string, React.ReactNode> = {
-    box: (
-      <>
-        <path d="m12 3 9 5-9 5-9-5 9-5Z" />
-        <path d="m3 8 9 5 9-5M3 8v9l9 5 9-5V8M12 13v9" />
-      </>
-    ),
-    layers: (
-      <>
-        <path d="m12 3 9 5-9 5-9-5 9-5Z" />
-        <path d="m3 12 9 5 9-5M3 16l9 5 9-5" />
-      </>
-    ),
-    receipt: (
-      <>
-        <path d="M5 3h14v18l-3-2-4 2-4-2-3 2V3Z" />
-        <path d="M8 8h8M8 12h8M8 16h4" />
-      </>
-    ),
-    users: (
-      <>
-        <circle cx="9" cy="8" r="3" />
-        <path d="M3 20v-1a6 6 0 0 1 12 0v1M16 5a3 3 0 0 1 0 6M18 14a5 5 0 0 1 3 5v1" />
-      </>
-    ),
-    trend: (
-      <>
-        <path d="m3 17 6-6 4 4 8-9" />
-        <path d="M15 6h6v6" />
-      </>
-    ),
-    chart: (
-      <>
-        <path d="M4 19V5m0 14h17" />
-        <path d="M8 16v-4m4 4V7m4 9v-7m4 7V4" />
-      </>
-    ),
-    arrow: <path d="M5 12h14m-6-6 6 6-6 6" />,
-    clock: (
-      <>
-        <circle cx="12" cy="12" r="9" />
-        <path d="M12 7v5l3 2" />
-      </>
-    ),
-    plus: <path d="M12 5v14m-7-7h14" />,
-  };
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" {...common}>
-      {shapes[name] ?? shapes.box}
-    </svg>
-  );
-}
 
 const quickLinks = [
   {
@@ -93,7 +33,7 @@ function EmptyState({ title, description }: { title: string; description: string
   return (
     <div className="flex min-h-[210px] flex-col items-center justify-center rounded-2xl border border-dashed border-[#e5e8ed] bg-white/45 px-5 text-center backdrop-blur-md dark:border-white/10 dark:bg-white/[0.035]">
       <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-[#a1a7b0] shadow-sm dark:bg-white/[0.06] dark:text-white/40">
-        <Icon name="chart" size={23} />
+        <AppIcon name="chart" size={23} />
       </span>
       <p className="mt-4 text-xs font-semibold text-[#515966] dark:text-white/75">{title}</p>
       <p className="mt-2 max-w-sm text-[10px] leading-6 text-[#969da7] dark:text-white/40">
@@ -147,7 +87,7 @@ export default function AdminDashboardPage() {
               <span
                 className={`flex h-11 w-11 items-center justify-center rounded-xl ${index === 0 ? 'bg-[#fff0e9] text-[#ff5a1f]' : 'bg-[#f2f4f7] text-[#67717e] dark:bg-white/[0.07] dark:text-white/65'}`}
               >
-                <Icon name={stat.icon} size={21} />
+                <AppIcon name={stat.icon} size={21} />
               </span>
             </div>
             <p className="relative z-10 mt-3 border-t border-[#f0f1f3] pt-3 text-[10px] text-[#a0a6af] dark:border-white/[0.07] dark:text-white/35">
@@ -186,7 +126,7 @@ export default function AdminDashboardPage() {
               </p>
             </div>
             <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#f4f5f7] text-[#6e7783] dark:bg-white/[0.06] dark:text-white/60">
-              <Icon name="trend" />
+              <AppIcon name="trend" />
             </span>
           </div>
           <div className="relative z-10 mt-5 space-y-2.5">
@@ -196,7 +136,7 @@ export default function AdminDashboardPage() {
                 className="flex items-center gap-3 rounded-xl border border-[#eef0f3] p-3 transition hover:border-[#ffd2c2] dark:border-white/[0.07]"
               >
                 <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#fff0e9] text-[#ff5a1f]">
-                  <Icon name={item.icon} size={19} />
+                  <AppIcon name={item.icon} size={19} />
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className="text-xs font-bold text-[#3b414a] dark:text-white/85">
@@ -225,7 +165,7 @@ export default function AdminDashboardPage() {
               </p>
             </div>
             <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#f4f5f7] text-[#6e7783] dark:bg-white/[0.06] dark:text-white/60">
-              <Icon name="receipt" />
+              <AppIcon name="receipt" />
             </span>
           </div>
           <div className="relative z-10 mt-5">
@@ -240,7 +180,7 @@ export default function AdminDashboardPage() {
           <div className="absolute -left-4 top-16 h-24 w-24 rounded-full bg-[#ff5a1f]/10 blur-2xl" />
           <div className="relative">
             <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#ff5a1f] text-white">
-              <Icon name="chart" size={22} />
+              <AppIcon name="chart" size={22} />
             </span>
             <p className="mt-5 text-base font-bold">فروشگاه در مسیر رشد</p>
             <p className="mt-2 text-[11px] leading-7 text-[#7f8792] dark:text-white/50">
@@ -270,7 +210,7 @@ export default function AdminDashboardPage() {
           href="/"
           className="inline-flex w-fit items-center gap-2 rounded-xl bg-[#ff5a1f] px-4 py-2.5 text-[10px] font-bold text-white shadow-lg shadow-[#ff5a1f]/15 transition hover:-translate-y-0.5 hover:bg-[#ed4c14]"
         >
-          مشاهده فروشگاه <Icon name="arrow" size={15} />
+          مشاهده فروشگاه <AppIcon name="arrow" size={15} />
         </Link>
       </section>
     </div>
