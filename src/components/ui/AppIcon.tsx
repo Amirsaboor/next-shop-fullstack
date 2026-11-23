@@ -1,9 +1,10 @@
+import type { IconType } from 'react-icons';
 import {
   FiActivity, FiArrowLeft, FiBell, FiBox, FiCheckCircle, FiChevronLeft, FiClock,
   FiCpu, FiDownload, FiEdit2, FiFileText, FiGrid, FiHeadphones, FiLayers, FiLink,
   FiLogOut, FiMenu, FiMinusCircle, FiMonitor, FiMoon, FiMoreHorizontal, FiMusic,
   FiPackage, FiPlus, FiSearch, FiSettings, FiSlash, FiSmartphone, FiSun, FiTrendingUp,
-  FiTruck, FiUser, FiUsers, FiVolume2, FiWatch, FiX, type IconType,
+  FiTruck, FiUser, FiUsers, FiVolume2, FiWatch, FiX,
 } from 'react-icons/fi';
 
 const icons: Record<string, IconType> = {
