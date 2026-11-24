@@ -33,14 +33,14 @@ export const useRequestClient = () => {
     errorTitle = '',
   }: RequestClientOptions): Promise<ApiResponse<T> | undefined> => {
     try {
-      const headers: HeadersInit = {};
+      const headers = new Headers();
       let body: BodyInit | undefined;
 
       if (data !== undefined) {
         if (data instanceof FormData) {
           body = data;
         } else {
-          headers['Content-Type'] = 'application/json';
+          headers.set('Content-Type', 'application/json');
           body = JSON.stringify(data);
         }
       }
